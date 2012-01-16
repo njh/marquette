@@ -36,8 +36,8 @@ POSSIBILITY OF SUCH DAMAGE.
 typedef int ssize_t;
 #endif
 
-#include <mosquitto_internal.h>
-#include <mosquitto.h>
+#include "mosquitto_internal.h"
+#include "mosquitto.h"
 
 #ifdef WITH_BROKER
 struct _mosquitto_db;

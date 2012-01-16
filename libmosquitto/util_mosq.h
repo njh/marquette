@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef _UTIL_MOSQ_H_
 #define _UTIL_MOSQ_H_
 
-#include <mosquitto.h>
+#include "mosquitto.h"
 
 int _mosquitto_packet_alloc(struct _mosquitto_packet *packet);
 void _mosquitto_check_keepalive(struct mosquitto *mosq);

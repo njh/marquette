@@ -31,14 +31,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <time.h>
 
-#include <mosquitto.h>
-#include <memory_mosq.h>
-#include <net_mosq.h>
-#include <send_mosq.h>
-#include <util_mosq.h>
+#include "mosquitto.h"
+#include "memory_mosq.h"
+#include "net_mosq.h"
+#include "send_mosq.h"
+#include "util_mosq.h"
 
 #ifdef WITH_BROKER
-#include <mqtt3.h>
+#include "mqtt3.h"
 #endif
 
 int _mosquitto_packet_alloc(struct _mosquitto_packet *packet)

@@ -69,9 +69,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #  define COMPAT_ECONNRESET WSAECONNRESET
 #endif
 
-#include <memory_mosq.h>
-#include <mqtt3_protocol.h>
-#include <net_mosq.h>
+#include "memory_mosq.h"
+#include "mqtt3_protocol.h"
+#include "net_mosq.h"
 
 void _mosquitto_net_init(void)
 {

@@ -29,11 +29,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <assert.h>
 
-#include <mosquitto.h>
-#include <logging_mosq.h>
-#include <memory_mosq.h>
-#include <net_mosq.h>
-#include <read_handle.h>
+#include "mosquitto.h"
+#include "logging_mosq.h"
+#include "memory_mosq.h"
+#include "net_mosq.h"
+#include "read_handle.h"
 
 int _mosquitto_handle_connack(struct mosquitto *mosq)
 {

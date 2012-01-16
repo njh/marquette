@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef _READ_HANDLE_H_
 #define _READ_HANDLE_H_
 
-#include <mosquitto.h>
+#include "mosquitto.h"
 struct _mosquitto_db;
 
 int _mosquitto_packet_handle(struct mosquitto *mosq);

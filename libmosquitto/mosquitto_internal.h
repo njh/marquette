@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef _MOSQUITTO_INTERNAL_H_
 #define _MOSQUITTO_INTERNAL_H_
 
-#include <config.h>
+#include "mosquitto_config.h"
 
 #ifdef WITH_SSL
 #include <openssl/ssl.h>
@@ -41,7 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <winsock2.h>
 #endif
 
-#include <mosquitto.h>
+#include "mosquitto.h"
 #ifdef WITH_BROKER
 struct _mosquitto_client_msg;
 #endif

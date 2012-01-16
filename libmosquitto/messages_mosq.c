@@ -31,11 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include <mosquitto_internal.h>
-#include <mosquitto.h>
-#include <memory_mosq.h>
-#include <messages_mosq.h>
-#include <send_mosq.h>
+#include "mosquitto_internal.h"
+#include "mosquitto.h"
+#include "memory_mosq.h"
+#include "messages_mosq.h"
+#include "send_mosq.h"
 
 void _mosquitto_message_cleanup(struct mosquitto_message_all **message)
 {
