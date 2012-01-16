@@ -16,7 +16,6 @@
 
 // Initialize is called just before the first object is allocated
 + (void)initialize {
-    NSLog(@"mosquitto_lib_init()");
     mosquitto_lib_init();
 }
 
