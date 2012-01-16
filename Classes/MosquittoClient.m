@@ -79,7 +79,6 @@
 
 - (void) dealloc {
     if (mosq) {
-        [self disconnect];
         mosquitto_destroy(mosq);
         mosq = NULL;
     }
