@@ -27,6 +27,8 @@
 		621B42E714C303D400265B33 /* send_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 621B42D814C303D400265B33 /* send_mosq.c */; };
 		621B42E814C303D400265B33 /* util_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 621B42DA14C303D400265B33 /* util_mosq.c */; };
 		621B42E914C303D400265B33 /* will_mosq.c in Sources */ = {isa = PBXBuildFile; fileRef = 621B42DC14C303D400265B33 /* will_mosq.c */; };
+		62DA1FBD14C41E2600E65D87 /* MosquittoClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DA1FBC14C41E2600E65D87 /* MosquittoClient.m */; };
+		62F7DB0714C4CCED000EC631 /* getMacAddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 62F7DB0614C4CCED000EC631 /* getMacAddress.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +68,10 @@
 		621B42DC14C303D400265B33 /* will_mosq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = will_mosq.c; sourceTree = "<group>"; };
 		621B42DD14C303D400265B33 /* will_mosq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = will_mosq.h; sourceTree = "<group>"; };
 		621B431114C30A2C00265B33 /* mosquitto_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mosquitto_config.h; sourceTree = "<group>"; };
+		62DA1FBB14C41E2600E65D87 /* MosquittoClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MosquittoClient.h; sourceTree = "<group>"; };
+		62DA1FBC14C41E2600E65D87 /* MosquittoClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MosquittoClient.m; sourceTree = "<group>"; };
+		62F7DB0514C4CCED000EC631 /* getMacAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getMacAddress.h; sourceTree = "<group>"; };
+		62F7DB0614C4CCED000EC631 /* getMacAddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = getMacAddress.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Marquette-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Marquette-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +96,8 @@
 				1D3623250D0F684500981E51 /* MarquetteAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* MarquetteViewController.h */,
 				28D7ACF70DDB3853001CB0EB /* MarquetteViewController.m */,
+				62DA1FBB14C41E2600E65D87 /* MosquittoClient.h */,
+				62DA1FBC14C41E2600E65D87 /* MosquittoClient.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -118,6 +126,8 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				62F7DB0514C4CCED000EC631 /* getMacAddress.h */,
+				62F7DB0614C4CCED000EC631 /* getMacAddress.m */,
 				32CA4F630368D1EE00C91783 /* Marquette_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
@@ -200,7 +210,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Marquette" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "marquette" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -251,6 +261,8 @@
 				621B42E714C303D400265B33 /* send_mosq.c in Sources */,
 				621B42E814C303D400265B33 /* util_mosq.c in Sources */,
 				621B42E914C303D400265B33 /* will_mosq.c in Sources */,
+				62DA1FBD14C41E2600E65D87 /* MosquittoClient.m in Sources */,
+				62F7DB0714C4CCED000EC631 /* getMacAddress.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -324,7 +336,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Marquette" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "marquette" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

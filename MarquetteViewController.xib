@@ -81,14 +81,14 @@
 					<object class="IBUILabel" id="249146888">
 						<reference key="NSNextResponder" ref="774585933"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{146, 145}, {99, 21}}</string>
+						<string key="NSFrame">{{122, 145}, {136, 21}}</string>
 						<reference key="NSSuperview" ref="774585933"/>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<int key="IBUIContentMode">7</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<string key="IBUIText">Nanode LED</string>
+						<string key="IBUIText">Nanode Red LED</string>
 						<reference key="IBUITextColor" ref="1044859411"/>
 						<reference key="IBUIHighlightedColor" ref="74412193"/>
 						<int key="IBUIBaselineAdjustment">1</int>
@@ -207,7 +207,7 @@
 					<string>UIResponder</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABDCQAAwycAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABDEgAAwyQAAA</bytes>
 					</object>
 					<string>{{349, 253}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>

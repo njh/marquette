@@ -7,6 +7,8 @@
 //
 
 #import "MarquetteViewController.h"
+#import "MarquetteAppDelegate.h"
+#import "MosquittoClient.h"
 
 @implementation MarquetteViewController
 
@@ -60,11 +62,15 @@
 }
 
 - (IBAction) ledSwitchAction:(id)sender {
+	MarquetteAppDelegate *app = [[UIApplication sharedApplication] delegate];
+	MosquittoClient *mosq = [app mosquittoClient];
     if ([sender isOn]) {
         NSLog(@"LED On");
+		[mosq publishString:@"1" toTopic:@"nanode/red_led" retain:YES];
     }
     else {
         NSLog(@"LED Off");
+		[mosq publishString:@"0" toTopic:@"nanode/red_led" retain:YES];
     }
 }
 
