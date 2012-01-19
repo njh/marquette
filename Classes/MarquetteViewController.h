@@ -7,15 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MosquittoClient.h"
 
-@interface MarquetteViewController : UIViewController {
-	UISwitch *ledSwitch;
+@interface MarquetteViewController : UIViewController <MosquittoClientDeligate> {
+	UISwitch *redLedSwitch;
+	UISwitch *greenLedSwitch;
 
+	UITextField *hostField;
+	UIButton *connectButton;
 }
 
-@property (nonatomic, retain) IBOutlet UISwitch *ledSwitch;
+@property (nonatomic, retain) IBOutlet UISwitch *redLedSwitch;
+@property (nonatomic, retain) IBOutlet UISwitch *greenLedSwitch;
+@property (nonatomic, retain) IBOutlet UITextField *hostField;
+@property (nonatomic, retain) IBOutlet UIButton *connectButton;
 
-- (IBAction) ledSwitchAction:(id)sender;
+- (IBAction) redLedSwitchAction:(id)sender;
+- (IBAction) greenLedSwitchAction:(id)sender;
+- (IBAction) connectButtonAction:(id)sender;
+
+- (void) didConnect:(NSUInteger)code;
 
 @end
 

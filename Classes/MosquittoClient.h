@@ -13,10 +13,12 @@
     unsigned short keepAlive;
     BOOL cleanSession;
 
+	id delegate;
     NSTimer *timer;
 }
 
 @property (readwrite,retain) NSString *host;
+@property (readwrite,assign) id delegate;
 @property (readwrite,assign) unsigned short port;
 @property (readwrite,assign) unsigned short keepAlive;
 @property (readwrite,assign) BOOL cleanSession;
@@ -27,6 +29,7 @@
 
 - (MosquittoClient*) initWithClientId: (NSString *)clientId;
 - (void) setLogPriorities: (int)priorities destinations:(int)destinations;
+- (void) setMessageRetry: (NSUInteger)seconds;
 - (void) connect;
 //- (void) connectToHost: (NSString*) host;
 - (void) reconnect;
@@ -35,7 +38,28 @@
 - (void)publishString: (NSString *)payload toTopic:(NSString *)topic retain:(BOOL)retain;
 //- (void)publishData
 
+- (void)subscribe: (NSString *)topic;
+- (void)subscribe: (NSString *)topic withQos:(NSUInteger)qos;
+- (void)unsubscribe: (NSString *)topic;
+
+
 // This is called automatically when connected
 - (void) loop: (NSTimer *)timer;
 
 @end
+
+
+
+@protocol MosquittoClientDeligate
+
+- (void) didConnect: (NSUInteger)code;
+- (void) didDisconnect;
+- (void) didPublish: (NSUInteger)messageId;
+
+// FIXME: create MosquittoMessage class
+- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic;
+- (void) didSubscribe: (NSUInteger)messageId grantedQos:(NSArray*)qos;
+- (void) didUnsubscribe: (NSUInteger)messageId;
+
+@end
+

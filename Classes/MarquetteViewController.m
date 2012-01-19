@@ -12,7 +12,10 @@
 
 @implementation MarquetteViewController
 
-@synthesize ledSwitch;
+@synthesize redLedSwitch;
+@synthesize greenLedSwitch;
+@synthesize hostField;
+@synthesize connectButton;
 
 
 /*
@@ -61,19 +64,75 @@
 	// e.g. self.myOutlet = nil;
 }
 
-- (IBAction) ledSwitchAction:(id)sender {
+- (IBAction) redLedSwitchAction:(id)sender {
 	MarquetteAppDelegate *app = [[UIApplication sharedApplication] delegate];
 	MosquittoClient *mosq = [app mosquittoClient];
     if ([sender isOn]) {
-        NSLog(@"LED On");
+        NSLog(@"Red LED On");
 		[mosq publishString:@"1" toTopic:@"nanode/red_led" retain:YES];
     }
     else {
-        NSLog(@"LED Off");
+        NSLog(@"Red LED Off");
 		[mosq publishString:@"0" toTopic:@"nanode/red_led" retain:YES];
     }
 }
 
+- (IBAction) greenLedSwitchAction:(id)sender {
+	MarquetteAppDelegate *app = [[UIApplication sharedApplication] delegate];
+	MosquittoClient *mosq = [app mosquittoClient];
+    if ([sender isOn]) {
+        NSLog(@"Green LED On");
+		[mosq publishString:@"1" toTopic:@"nanode/green_led" retain:YES];
+    }
+    else {
+        NSLog(@"Green LED Off");
+		[mosq publishString:@"0" toTopic:@"nanode/green_led" retain:YES];
+    }
+}
+
+- (IBAction) connectButtonAction:(id)sender {
+	MarquetteAppDelegate *app = [[UIApplication sharedApplication] delegate];
+	MosquittoClient *mosq = [app mosquittoClient];
+
+	// (Re-)connect
+	//[mosq disconnect]; UITextField
+	[mosq setHost: [[self hostField] text]];
+	[mosq connect];
+
+	[mosq subscribe:@"nanode/red_led"];
+	[mosq subscribe:@"nanode/green_led"];
+}
+
+- (void) didConnect:(NSUInteger)code {
+	[[self connectButton] setTitle:@"Reconnect" forState:UIControlStateNormal];
+}
+
+- (void) didDisconnect {
+	[[self connectButton] setTitle:@"Connect" forState:UIControlStateNormal];
+}
+
+- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic {
+	NSLog(@"%@ => %@", topic, message);
+
+	UISwitch *sw = nil;
+	if ([topic isEqualToString:@"nanode/red_led"]) {
+		sw = redLedSwitch;
+	} else if ([topic isEqualToString:@"nanode/green_led"]) {
+		sw = greenLedSwitch;
+	} else {
+		return;
+	}
+
+	if ([message isEqualToString:@"1"]) {
+		[sw setOn: YES];
+	} else if ([message isEqualToString:@"0"]) {
+		[sw setOn: NO];
+	}
+}
+
+- (void) didPublish: (NSUInteger)messageId {}
+- (void) didSubscribe: (NSUInteger)messageId grantedQos:(NSArray*)qos {}
+- (void) didUnsubscribe: (NSUInteger)messageId {}
 
 - (void)dealloc {
     [super dealloc];

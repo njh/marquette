@@ -38,10 +38,7 @@
 
 	// FIXME: only if compiled in debug mode?
 	[mosquittoClient setLogPriorities:MOSQ_LOG_ALL destinations:MOSQ_LOG_STDERR];
-
-	// Connect
-	[mosquittoClient setHost: @"test.mosquitto.org"];
-	[mosquittoClient connect];
+	[mosquittoClient setDelegate: self.viewController];
 
     return YES;
 }
