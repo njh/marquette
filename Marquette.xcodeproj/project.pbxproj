@@ -291,6 +291,7 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Marquette_Prefix.pch;
+				HEADER_SEARCH_PATHS = libmosquitto;
 				INFOPLIST_FILE = "Marquette-Info.plist";
 				PRODUCT_NAME = Marquette;
 				VALIDATE_PRODUCT = YES;
