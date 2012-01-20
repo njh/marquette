@@ -24,6 +24,8 @@
     struct mosquitto *mosq;
     NSString *host;
     unsigned short port;
+    NSString *username;
+    NSString *password;
     unsigned short keepAlive;
     BOOL cleanSession;
 
@@ -32,10 +34,12 @@
 }
 
 @property (readwrite,retain) NSString *host;
-@property (readwrite,assign) id<MosquittoClientDeligate> delegate;
 @property (readwrite,assign) unsigned short port;
+@property (readwrite,retain) NSString *username;
+@property (readwrite,retain) NSString *password;
 @property (readwrite,assign) unsigned short keepAlive;
 @property (readwrite,assign) BOOL cleanSession;
+@property (readwrite,assign) id<MosquittoClientDeligate> delegate;
 
 + (void) initialize;
 + (NSString*) version;

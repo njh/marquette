@@ -11,6 +11,8 @@
 
 @synthesize host;
 @synthesize port;
+@synthesize username;
+@synthesize password;
 @synthesize keepAlive;
 @synthesize cleanSession;
 @synthesize delegate;
@@ -94,7 +96,17 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
 }
 
 - (void) connect {
-    const char* cstrHost = [host cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *cstrHost = [host cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *cstrUsername = NULL, *cstrPassword = NULL;
+
+    if (username)
+        cstrUsername = [username cStringUsingEncoding:NSUTF8StringEncoding];
+
+    if (password)
+        cstrPassword = [password cStringUsingEncoding:NSUTF8StringEncoding];
+
+    // FIXME: check for errors
+    mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
 
     mosquitto_connect(mosq, cstrHost, port, keepAlive, cleanSession);
 
