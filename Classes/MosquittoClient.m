@@ -108,6 +108,11 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
                                             repeats:YES];
 }
 
+- (void) connectToHost: (NSString*)aHost {
+    [self setHost:aHost];
+    [self connect];
+}
+
 - (void) reconnect {
     mosquitto_reconnect(mosq);
 }

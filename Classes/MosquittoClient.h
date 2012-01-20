@@ -45,7 +45,7 @@
 - (void) setLogPriorities: (int)priorities destinations:(int)destinations;
 - (void) setMessageRetry: (NSUInteger)seconds;
 - (void) connect;
-//- (void) connectToHost: (NSString*)host;
+- (void) connectToHost: (NSString*)host;
 - (void) reconnect;
 - (void) disconnect;
 
