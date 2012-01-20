@@ -18,55 +18,43 @@
 
 static void on_connect(void *ptr, int rc)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didConnect:)])
-        [[self delegate] didConnect:(NSUInteger)rc];
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    [[client delegate] didConnect:(NSUInteger)rc];
 }
 
 static void on_disconnect(void *ptr)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didDisconnect)])
-        [[self delegate] didDisconnect];
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    [[client delegate] didDisconnect];
 }
 
 static void on_publish(void *ptr, uint16_t message_id)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didPublish:)])
-        [[self delegate] didPublish:(NSUInteger)message_id];
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    [[client delegate] didPublish:(NSUInteger)message_id];
 }
 
 static void on_message(void *ptr, const struct mosquitto_message *message)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	NSString *topic = [NSString stringWithUTF8String: message->topic];
-	NSString *payload = [NSString stringWithCharacters:(const unichar *)message->payload
-												 length:message->payloadlen];
-
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didReceiveMessage:topic:)])
-        [[self delegate] didReceiveMessage:payload topic:topic];
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    NSString *topic = [NSString stringWithUTF8String: message->topic];
+    NSString *payload = [NSString stringWithCharacters:(const unichar *)message->payload
+                                                length:message->payloadlen];
+    // FIXME: create MosquittoMessage class instead
+    [[client delegate] didReceiveMessage:payload topic:topic];
 }
 
 static void on_subscribe(void *ptr, uint16_t message_id, int qos_count, const uint8_t *granted_qos)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didSubscribe:grantedQos:)])
-        [[self delegate] didSubscribe:message_id grantedQos:nil];
-	// FIXME: implement this
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    // FIXME: implement this
+    [[client delegate] didSubscribe:message_id grantedQos:nil];
 }
 
 static void on_unsubscribe(void *ptr, uint16_t message_id)
 {
-	MosquittoClient* self = (MosquittoClient*)ptr;
-	// FIXME: cache respondsToSelector
-	if ([[self delegate] respondsToSelector:@selector(didUnsubscribe:)])
-        [[self delegate] didUnsubscribe:message_id];
+    MosquittoClient* client = (MosquittoClient*)ptr;
+    [[client delegate] didUnsubscribe:message_id];
 }
 
 
@@ -140,23 +128,23 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
 }
 
 - (void)subscribe: (NSString *)topic {
-	[self subscribe:topic withQos:0];
+    [self subscribe:topic withQos:0];
 }
 
 - (void)subscribe: (NSString *)topic withQos:(NSUInteger)qos {
     const char* cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
-	mosquitto_subscribe(mosq, NULL, cstrTopic, qos);
+    mosquitto_subscribe(mosq, NULL, cstrTopic, qos);
 }
 
 - (void)unsubscribe: (NSString *)topic {
     const char* cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
-	mosquitto_unsubscribe(mosq, NULL, cstrTopic);
+    mosquitto_unsubscribe(mosq, NULL, cstrTopic);
 }
 
 
 - (void) setMessageRetry: (NSUInteger)seconds
 {
-	mosquitto_message_retry_set(mosq, (unsigned int)seconds);
+    mosquitto_message_retry_set(mosq, (unsigned int)seconds);
 }
 
 - (void) dealloc {
