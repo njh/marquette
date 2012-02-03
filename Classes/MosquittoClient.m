@@ -40,8 +40,10 @@ static void on_message(void *ptr, const struct mosquitto_message *message)
 {
     MosquittoClient* client = (MosquittoClient*)ptr;
     NSString *topic = [NSString stringWithUTF8String: message->topic];
-    NSString *payload = [NSString stringWithCharacters:(const unichar *)message->payload
-                                                length:message->payloadlen];
+    NSString *payload = [[[NSString alloc] initWithBytes:message->payload
+                                                  length:message->payloadlen
+                                                encoding:NSUTF8StringEncoding] autorelease];
+
     // FIXME: create MosquittoMessage class instead
     [[client delegate] didReceiveMessage:payload topic:topic];
 }
