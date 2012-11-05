@@ -18,27 +18,27 @@
 @synthesize delegate;
 
 
-static void on_connect(void *ptr, int rc)
+static void on_connect(struct mosquitto *mosq, void *obj, int rc)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     [[client delegate] didConnect:(NSUInteger)rc];
 }
 
-static void on_disconnect(void *ptr)
+static void on_disconnect(struct mosquitto *mosq, void *obj, int rc)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     [[client delegate] didDisconnect];
 }
 
-static void on_publish(void *ptr, uint16_t message_id)
+static void on_publish(struct mosquitto *mosq, void *obj, int message_id)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     [[client delegate] didPublish:(NSUInteger)message_id];
 }
 
-static void on_message(void *ptr, const struct mosquitto_message *message)
+static void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     NSString *topic = [NSString stringWithUTF8String: message->topic];
     NSString *payload = [[[NSString alloc] initWithBytes:message->payload
                                                   length:message->payloadlen
@@ -48,16 +48,16 @@ static void on_message(void *ptr, const struct mosquitto_message *message)
     [[client delegate] didReceiveMessage:payload topic:topic];
 }
 
-static void on_subscribe(void *ptr, uint16_t message_id, int qos_count, const uint8_t *granted_qos)
+static void on_subscribe(struct mosquitto *mosq, void *obj, int message_id, int qos_count, const int *granted_qos)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     // FIXME: implement this
     [[client delegate] didSubscribe:message_id grantedQos:nil];
 }
 
-static void on_unsubscribe(void *ptr, uint16_t message_id)
+static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
 {
-    MosquittoClient* client = (MosquittoClient*)ptr;
+    MosquittoClient* client = (MosquittoClient*)obj;
     [[client delegate] didUnsubscribe:message_id];
 }
 
@@ -78,10 +78,10 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
         const char* cstrClientId = [clientId cStringUsingEncoding:NSUTF8StringEncoding];
         [self setHost: nil];
         [self setPort: 1883];
-        [self setKeepAlive: 30];
+        [self setKeepAlive: 60];
         [self setCleanSession: YES];
 
-        mosq = mosquitto_new(cstrClientId, self);
+        mosq = mosquitto_new(cstrClientId, cleanSession, self);
         mosquitto_connect_callback_set(mosq, on_connect);
         mosquitto_disconnect_callback_set(mosq, on_disconnect);
         mosquitto_publish_callback_set(mosq, on_publish);
@@ -93,9 +93,6 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
     return self;
 }
 
-- (void) setLogPriorities: (int)priorities destinations:(int)destinations {
-    mosquitto_log_init(mosq, priorities, destinations);
-}
 
 - (void) connect {
     const char *cstrHost = [host cStringUsingEncoding:NSASCIIStringEncoding];
@@ -110,7 +107,7 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
     // FIXME: check for errors
     mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
 
-    mosquitto_connect(mosq, cstrHost, port, keepAlive, cleanSession);
+    mosquitto_connect(mosq, cstrHost, port, keepAlive);
 
     // Setup timer to handle network events
     // FIXME: better way to do this - hook into iOS Run Loop select() ?
@@ -136,7 +133,7 @@ static void on_unsubscribe(void *ptr, uint16_t message_id)
 }
 
 - (void) loop: (NSTimer *)timer {
-    mosquitto_loop(mosq, 0);
+    mosquitto_loop(mosq, 1, 1);
 }
 
 // FIXME: add QoS parameter?

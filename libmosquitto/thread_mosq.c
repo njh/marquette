@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2010, Roger Light <roger@atchoo.org>
+Copyright (c) 2011 Roger Light <roger@atchoo.org>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -26,19 +26,82 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef _MESSAGES_MOSQ_H_
-#define _MESSAGES_MOSQ_H_
+
+#include <config.h>
+
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 #include <mosquitto_internal.h>
-#include <mosquitto.h>
 
-void _mosquitto_message_cleanup_all(struct mosquitto *mosq);
-void _mosquitto_message_cleanup(struct mosquitto_message_all **message);
-int _mosquitto_message_delete(struct mosquitto *mosq, uint16_t mid, enum mosquitto_msg_direction dir);
-void _mosquitto_message_queue(struct mosquitto *mosq, struct mosquitto_message_all *message);
-void _mosquitto_messages_reconnect_reset(struct mosquitto *mosq);
-int _mosquitto_message_remove(struct mosquitto *mosq, uint16_t mid, enum mosquitto_msg_direction dir, struct mosquitto_message_all **message);
-void _mosquitto_message_retry_check(struct mosquitto *mosq);
-int _mosquitto_message_update(struct mosquitto *mosq, uint16_t mid, enum mosquitto_msg_direction dir, enum mosquitto_msg_state state);
+void *_mosquitto_thread_main(void *obj);
 
+int mosquitto_loop_start(struct mosquitto *mosq)
+{
+#ifdef WITH_THREADING
+	if(!mosq) return MOSQ_ERR_INVAL;
+
+	pthread_create(&mosq->thread_id, NULL, _mosquitto_thread_main, mosq);
+	return MOSQ_ERR_SUCCESS;
+#else
+	return MOSQ_ERR_NOT_SUPPORTED;
 #endif
+}
+
+int mosquitto_loop_stop(struct mosquitto *mosq, bool force)
+{
+#ifdef WITH_THREADING
+	if(!mosq) return MOSQ_ERR_INVAL;
+	
+	if(force){
+		pthread_cancel(mosq->thread_id);
+	}
+	pthread_join(mosq->thread_id, NULL);
+	mosq->thread_id = pthread_self();
+
+	return MOSQ_ERR_SUCCESS;
+#else
+	return MOSQ_ERR_NOT_SUPPORTED;
+#endif
+}
+
+#ifdef WITH_THREADING
+void *_mosquitto_thread_main(void *obj)
+{
+	struct mosquitto *mosq = obj;
+	int run = 1;
+	int rc;
+
+	if(!mosq) return NULL;
+
+	pthread_mutex_lock(&mosq->state_mutex);
+	if(mosq->state == mosq_cs_connect_async){
+		pthread_mutex_unlock(&mosq->state_mutex);
+		mosquitto_reconnect(mosq);
+	}else{
+		pthread_mutex_unlock(&mosq->state_mutex);
+	}
+
+	while(run){
+		do{
+			rc = mosquitto_loop(mosq, -1, 1);
+		}while(rc == MOSQ_ERR_SUCCESS);
+		pthread_mutex_lock(&mosq->state_mutex);
+		if(mosq->state == mosq_cs_disconnecting){
+			run = 0;
+			pthread_mutex_unlock(&mosq->state_mutex);
+		}else{
+			pthread_mutex_unlock(&mosq->state_mutex);
+#ifdef WIN32
+			Sleep(1000);
+#else
+			sleep(1);
+#endif
+			mosquitto_reconnect(mosq);
+		}
+	}
+	return obj;
+}
+#endif
+
