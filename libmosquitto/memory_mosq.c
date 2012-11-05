@@ -27,22 +27,24 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "mosquitto_config.h"
+#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>
 
-#include "memory_mosq.h"
+#include <memory_mosq.h>
 
 #ifdef REAL_WITH_MEMORY_TRACKING
 #  if defined(__APPLE__)
 #    define malloc_usable_size malloc_good_size
+#  elif defined(__FreeBSD__)
+#    include <malloc_np.h>
 #  else
 #    include <malloc.h>
 #  endif
 #endif
 
-#include "memory_mosq.h"
+#include <memory_mosq.h>
 
 #ifdef REAL_WITH_MEMORY_TRACKING
 static unsigned long memcount = 0;

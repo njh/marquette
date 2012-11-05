@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2009-2011 Roger Light <roger@atchoo.org>
+Copyright (c) 2009-2012 Roger Light <roger@atchoo.org>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -31,17 +31,17 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 
-#include "mosquitto.h"
-#include "logging_mosq.h"
-#include "memory_mosq.h"
-#include "messages_mosq.h"
-#include "mqtt3_protocol.h"
-#include "net_mosq.h"
-#include "read_handle.h"
-#include "send_mosq.h"
-#include "util_mosq.h"
+#include <mosquitto.h>
+#include <logging_mosq.h>
+#include <memory_mosq.h>
+#include <messages_mosq.h>
+#include <mqtt3_protocol.h>
+#include <net_mosq.h>
+#include <read_handle.h>
+#include <send_mosq.h>
+#include <util_mosq.h>
 #ifdef WITH_BROKER
-#include "mqtt3.h"
+#include <mosquitto_broker.h>
 #endif
 
 int _mosquitto_handle_pingreq(struct mosquitto *mosq)
@@ -55,7 +55,7 @@ int _mosquitto_handle_pingreq(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received PINGREQ from %s", mosq->id);
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received PINGREQ");
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received PINGREQ", mosq->id);
 #endif
 	return _mosquitto_send_pingresp(mosq);
 }
@@ -68,10 +68,11 @@ int _mosquitto_handle_pingresp(struct mosquitto *mosq)
 		return MOSQ_ERR_PROTOCOL;
 	}
 #endif
+	mosq->ping_t = 0; /* No longer waiting for a PINGRESP. */
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received PINGRESP from %s", mosq->id);
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received PINGRESP");
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received PINGRESP", mosq->id);
 #endif
 	return MOSQ_ERR_SUCCESS;
 }
@@ -97,15 +98,17 @@ int _mosquitto_handle_pubackcomp(struct mosquitto *mosq, const char *type)
 		if(rc) return rc;
 	}
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received %s (Mid: %d)", type, mid);
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received %s (Mid: %d)", mosq->id, type, mid);
 
 	if(!_mosquitto_message_delete(mosq, mid, mosq_md_out)){
 		/* Only inform the client the message has been sent once. */
+		pthread_mutex_lock(&mosq->callback_mutex);
 		if(mosq->on_publish){
 			mosq->in_callback = true;
-			mosq->on_publish(mosq->obj, mid);
+			mosq->on_publish(mosq, mosq->obj, mid);
 			mosq->in_callback = false;
 		}
+		pthread_mutex_unlock(&mosq->callback_mutex);
 	}
 #endif
 
@@ -128,9 +131,9 @@ int _mosquitto_handle_pubrec(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received PUBREC from %s (Mid: %d)", mosq->id, mid);
 
-	rc = mqtt3_db_message_update(mosq, mid, mosq_md_out, ms_wait_pubcomp);
+	rc = mqtt3_db_message_update(mosq, mid, mosq_md_out, ms_wait_for_pubcomp);
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received PUBREC (Mid: %d)", mid);
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received PUBREC (Mid: %d)", mosq->id, mid);
 
 	rc = _mosquitto_message_update(mosq, mid, mosq_md_out, mosq_ms_wait_pubcomp);
 #endif
@@ -160,20 +163,24 @@ int _mosquitto_handle_pubrel(struct _mosquitto_db *db, struct mosquitto *mosq)
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received PUBREL from %s (Mid: %d)", mosq->id, mid);
 
-	mqtt3_db_message_release(db, mosq, mid, mosq_md_in);
+	if(mqtt3_db_message_release(db, mosq, mid, mosq_md_in)){
+		/* Message not found. */
+		return MOSQ_ERR_SUCCESS;
+	}
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received PUBREL (Mid: %d)", mid);
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received PUBREL (Mid: %d)", mosq->id, mid);
 
 	if(!_mosquitto_message_remove(mosq, mid, mosq_md_in, &message)){
 		/* Only pass the message on if we have removed it from the queue - this
 		 * prevents multiple callbacks for the same message. */
+		pthread_mutex_lock(&mosq->callback_mutex);
 		if(mosq->on_message){
 			mosq->in_callback = true;
-			mosq->on_message(mosq->obj, &message->msg);
+			mosq->on_message(mosq, mosq->obj, &message->msg);
 			mosq->in_callback = false;
-		}else{
-			_mosquitto_message_cleanup(&message);
 		}
+		pthread_mutex_unlock(&mosq->callback_mutex);
+		_mosquitto_message_cleanup(&message);
 	}
 #endif
 	rc = _mosquitto_send_pubcomp(mosq, mid);
@@ -185,7 +192,8 @@ int _mosquitto_handle_pubrel(struct _mosquitto_db *db, struct mosquitto *mosq)
 int _mosquitto_handle_suback(struct mosquitto *mosq)
 {
 	uint16_t mid;
-	uint8_t *granted_qos;
+	uint8_t qos;
+	int *granted_qos;
 	int qos_count;
 	int i = 0;
 	int rc;
@@ -194,28 +202,31 @@ int _mosquitto_handle_suback(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received SUBACK from %s", mosq->id);
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received SUBACK");
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received SUBACK", mosq->id);
 #endif
 	rc = _mosquitto_read_uint16(&mosq->in_packet, &mid);
 	if(rc) return rc;
 
 	qos_count = mosq->in_packet.remaining_length - mosq->in_packet.pos;
-	granted_qos = _mosquitto_malloc(qos_count*sizeof(uint8_t));
+	granted_qos = _mosquitto_malloc(qos_count*sizeof(int));
 	if(!granted_qos) return MOSQ_ERR_NOMEM;
 	while(mosq->in_packet.pos < mosq->in_packet.remaining_length){
-		rc = _mosquitto_read_byte(&mosq->in_packet, &(granted_qos[i]));
+		rc = _mosquitto_read_byte(&mosq->in_packet, &qos);
 		if(rc){
 			_mosquitto_free(granted_qos);
 			return rc;
 		}
+		granted_qos[i] = (int)qos;
 		i++;
 	}
 #ifndef WITH_BROKER
+	pthread_mutex_lock(&mosq->callback_mutex);
 	if(mosq->on_subscribe){
 		mosq->in_callback = true;
-		mosq->on_subscribe(mosq->obj, mid, qos_count, granted_qos);
+		mosq->on_subscribe(mosq, mosq->obj, mid, qos_count, granted_qos);
 		mosq->in_callback = false;
 	}
+	pthread_mutex_unlock(&mosq->callback_mutex);
 #endif
 	_mosquitto_free(granted_qos);
 
@@ -236,16 +247,18 @@ int _mosquitto_handle_unsuback(struct mosquitto *mosq)
 #ifdef WITH_BROKER
 	_mosquitto_log_printf(NULL, MOSQ_LOG_DEBUG, "Received UNSUBACK from %s", mosq->id);
 #else
-	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Received UNSUBACK");
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s received UNSUBACK", mosq->id);
 #endif
 	rc = _mosquitto_read_uint16(&mosq->in_packet, &mid);
 	if(rc) return rc;
 #ifndef WITH_BROKER
+	pthread_mutex_lock(&mosq->callback_mutex);
 	if(mosq->on_unsubscribe){
 		mosq->in_callback = true;
-	   	mosq->on_unsubscribe(mosq->obj, mid);
+	   	mosq->on_unsubscribe(mosq, mosq->obj, mid);
 		mosq->in_callback = false;
 	}
+	pthread_mutex_unlock(&mosq->callback_mutex);
 #endif
 
 	return MOSQ_ERR_SUCCESS;

@@ -30,12 +30,17 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <string.h>
 
-#include "mosquitto.h"
-#include "memory_mosq.h"
-#include "mqtt3_protocol.h"
-#include "net_mosq.h"
-#include "send_mosq.h"
-#include "util_mosq.h"
+#include <mosquitto.h>
+#include <logging_mosq.h>
+#include <memory_mosq.h>
+#include <mqtt3_protocol.h>
+#include <net_mosq.h>
+#include <send_mosq.h>
+#include <util_mosq.h>
+
+#ifdef WITH_BROKER
+#include <mosquitto_broker.h>
+#endif
 
 int _mosquitto_send_connect(struct mosquitto *mosq, uint16_t keepalive, bool clean_session)
 {
@@ -44,6 +49,7 @@ int _mosquitto_send_connect(struct mosquitto *mosq, uint16_t keepalive, bool cle
 	uint8_t will = 0;
 	uint8_t byte;
 	int rc;
+	uint8_t version = PROTOCOL_VERSION;
 
 	assert(mosq);
 	assert(mosq->id);
@@ -75,7 +81,13 @@ int _mosquitto_send_connect(struct mosquitto *mosq, uint16_t keepalive, bool cle
 
 	/* Variable header */
 	_mosquitto_write_string(packet, PROTOCOL_NAME, strlen(PROTOCOL_NAME));
-	_mosquitto_write_byte(packet, PROTOCOL_VERSION);
+#if defined(WITH_BROKER) && defined(WITH_BRIDGE)
+	if(mosq->bridge && mosq->bridge->try_private && mosq->bridge->try_private_accepted){
+		version |= 0x80;
+	}else{
+	}
+#endif
+	_mosquitto_write_byte(packet, version);
 	byte = (clean_session&0x1)<<1;
 	if(will){
 		byte = byte | ((mosq->will->retain&0x1)<<5) | ((mosq->will->qos&0x3)<<3) | ((will&0x1)<<2);
@@ -103,16 +115,30 @@ int _mosquitto_send_connect(struct mosquitto *mosq, uint16_t keepalive, bool cle
 	}
 
 	mosq->keepalive = keepalive;
+#ifdef WITH_BROKER
+# ifdef WITH_BRIDGE
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Bridge %s sending CONNECT", mosq->id);
+# endif
+#else
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s sending CONNECT", mosq->id);
+#endif
 	return _mosquitto_packet_queue(mosq, packet);
 }
 
 int _mosquitto_send_disconnect(struct mosquitto *mosq)
 {
 	assert(mosq);
+#ifdef WITH_BROKER
+# ifdef WITH_BRIDGE
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Bridge %s sending DISCONNECT", mosq->id);
+# endif
+#else
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s sending DISCONNECT", mosq->id);
+#endif
 	return _mosquitto_send_simple_command(mosq, DISCONNECT);
 }
 
-int _mosquitto_send_subscribe(struct mosquitto *mosq, uint16_t *mid, bool dup, const char *topic, uint8_t topic_qos)
+int _mosquitto_send_subscribe(struct mosquitto *mosq, int *mid, bool dup, const char *topic, uint8_t topic_qos)
 {
 	/* FIXME - only deals with a single topic */
 	struct _mosquitto_packet *packet = NULL;
@@ -138,18 +164,26 @@ int _mosquitto_send_subscribe(struct mosquitto *mosq, uint16_t *mid, bool dup, c
 
 	/* Variable header */
 	local_mid = _mosquitto_mid_generate(mosq);
-	if(mid) *mid = local_mid;
+	if(mid) *mid = (int)local_mid;
 	_mosquitto_write_uint16(packet, local_mid);
 
 	/* Payload */
 	_mosquitto_write_string(packet, topic, strlen(topic));
 	_mosquitto_write_byte(packet, topic_qos);
 
+#ifdef WITH_BROKER
+# ifdef WITH_BRIDGE
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Bridge %s sending SUBSCRIBE (Mid: %d, Topic: %s, QoS: %d)", mosq->id, local_mid, topic, topic_qos);
+# endif
+#else
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s sending SUBSCRIBE (Mid: %d, Topic: %s, QoS: %d)", mosq->id, local_mid, topic, topic_qos);
+#endif
+
 	return _mosquitto_packet_queue(mosq, packet);
 }
 
 
-int _mosquitto_send_unsubscribe(struct mosquitto *mosq, uint16_t *mid, bool dup, const char *topic)
+int _mosquitto_send_unsubscribe(struct mosquitto *mosq, int *mid, bool dup, const char *topic)
 {
 	/* FIXME - only deals with a single topic */
 	struct _mosquitto_packet *packet = NULL;
@@ -175,12 +209,19 @@ int _mosquitto_send_unsubscribe(struct mosquitto *mosq, uint16_t *mid, bool dup,
 
 	/* Variable header */
 	local_mid = _mosquitto_mid_generate(mosq);
-	if(mid) *mid = local_mid;
+	if(mid) *mid = (int)local_mid;
 	_mosquitto_write_uint16(packet, local_mid);
 
 	/* Payload */
 	_mosquitto_write_string(packet, topic, strlen(topic));
 
+#ifdef WITH_BROKER
+# ifdef WITH_BRIDGE
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Bridge %s sending UNSUBSCRIBE (Mid: %d, Topic: %s)", mosq->id, local_mid, topic);
+# endif
+#else
+	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG, "Client %s sending UNSUBSCRIBE (Mid: %d, Topic: %s)", mosq->id, local_mid, topic);
+#endif
 	return _mosquitto_packet_queue(mosq, packet);
 }
 
