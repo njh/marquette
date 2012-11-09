@@ -31,15 +31,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 
-#include "mosquitto.h"
-#include "logging_mosq.h"
-#include "memory_mosq.h"
-#include "messages_mosq.h"
-#include "mqtt3_protocol.h"
-#include "net_mosq.h"
-#include "read_handle.h"
-#include "send_mosq.h"
-#include "util_mosq.h"
+#include <mosquitto.h>
+#include <logging_mosq.h>
+#include <memory_mosq.h>
+#include <messages_mosq.h>
+#include <mqtt3_protocol.h>
+#include <net_mosq.h>
+#include <read_handle.h>
+#include <send_mosq.h>
+#include <util_mosq.h>
 
 int _mosquitto_packet_handle(struct mosquitto *mosq)
 {
@@ -78,6 +78,7 @@ int _mosquitto_handle_publish(struct mosquitto *mosq)
 	uint8_t header;
 	struct mosquitto_message_all *message;
 	int rc = 0;
+	uint16_t mid;
 
 	assert(mosq);
 
@@ -107,44 +108,50 @@ int _mosquitto_handle_publish(struct mosquitto *mosq)
 	}
 
 	if(message->msg.qos > 0){
-		rc = _mosquitto_read_uint16(&mosq->in_packet, &message->msg.mid);
+		rc = _mosquitto_read_uint16(&mosq->in_packet, &mid);
 		if(rc){
 			_mosquitto_message_cleanup(&message);
 			return rc;
 		}
+		message->msg.mid = (int)mid;
 	}
 
 	message->msg.payloadlen = mosq->in_packet.remaining_length - mosq->in_packet.pos;
 	if(message->msg.payloadlen){
 		message->msg.payload = _mosquitto_calloc(message->msg.payloadlen+1, sizeof(uint8_t));
-		_mosquitto_read_bytes(&mosq->in_packet, message->msg.payload, message->msg.payloadlen);
+		rc = _mosquitto_read_bytes(&mosq->in_packet, message->msg.payload, message->msg.payloadlen);
 		if(rc){
 			_mosquitto_message_cleanup(&message);
 			return rc;
 		}
 	}
 	_mosquitto_log_printf(mosq, MOSQ_LOG_DEBUG,
-			"Received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
-			message->dup, message->msg.qos, message->msg.retain, message->msg.mid,
-			message->msg.topic, (long)message->msg.payloadlen);
+			"Client %s received PUBLISH (d%d, q%d, r%d, m%d, '%s', ... (%ld bytes))",
+			mosq->id, message->dup, message->msg.qos, message->msg.retain,
+			message->msg.mid, message->msg.topic,
+			(long)message->msg.payloadlen);
 
 	message->timestamp = time(NULL);
 	switch(message->msg.qos){
 		case 0:
+			pthread_mutex_lock(&mosq->callback_mutex);
 			if(mosq->on_message){
 				mosq->in_callback = true;
-				mosq->on_message(mosq->obj, &message->msg);
+				mosq->on_message(mosq, mosq->obj, &message->msg);
 				mosq->in_callback = false;
 			}
+			pthread_mutex_unlock(&mosq->callback_mutex);
 			_mosquitto_message_cleanup(&message);
 			return MOSQ_ERR_SUCCESS;
 		case 1:
 			rc = _mosquitto_send_puback(mosq, message->msg.mid);
+			pthread_mutex_lock(&mosq->callback_mutex);
 			if(mosq->on_message){
 				mosq->in_callback = true;
-				mosq->on_message(mosq->obj, &message->msg);
+				mosq->on_message(mosq, mosq->obj, &message->msg);
 				mosq->in_callback = false;
 			}
+			pthread_mutex_unlock(&mosq->callback_mutex);
 			_mosquitto_message_cleanup(&message);
 			return rc;
 		case 2:

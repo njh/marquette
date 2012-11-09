@@ -37,7 +37,7 @@
 	// FIXME: deal with failed inits
 
 	// FIXME: only if compiled in debug mode?
-	[mosquittoClient setLogPriorities:MOSQ_LOG_ALL destinations:MOSQ_LOG_STDERR];
+	//[mosquittoClient setLogPriorities:MOSQ_LOG_ALL destinations:MOSQ_LOG_STDERR];
 	[mosquittoClient setDelegate: self.viewController];
 
     return YES;

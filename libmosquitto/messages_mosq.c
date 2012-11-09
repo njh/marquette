@@ -31,11 +31,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include "mosquitto_internal.h"
-#include "mosquitto.h"
-#include "memory_mosq.h"
-#include "messages_mosq.h"
-#include "send_mosq.h"
+#include <mosquitto_internal.h>
+#include <mosquitto.h>
+#include <memory_mosq.h>
+#include <messages_mosq.h>
+#include <send_mosq.h>
 
 void _mosquitto_message_cleanup(struct mosquitto_message_all **message)
 {
@@ -132,6 +132,37 @@ void _mosquitto_message_queue(struct mosquitto *mosq, struct mosquitto_message_a
 	}
 }
 
+void _mosquitto_messages_reconnect_reset(struct mosquitto *mosq)
+{
+	struct mosquitto_message_all *message;
+	struct mosquitto_message_all *prev = NULL;
+	assert(mosq);
+
+	message = mosq->messages;
+	while(message){
+		message->timestamp = 0;
+		if(message->direction == mosq_md_out){
+			if(message->msg.qos == 1){
+				message->state = mosq_ms_wait_puback;
+			}else if(message->msg.qos == 2){
+				message->state = mosq_ms_wait_pubrec;
+			}
+		}else{
+			if(prev){
+				prev->next = message->next;
+				_mosquitto_message_cleanup(&message);
+				message = prev;
+			}else{
+				mosq->messages = message->next;
+				_mosquitto_message_cleanup(&message);
+				message = mosq->messages;
+			}
+		}
+		prev = message;
+		message = message->next;
+	}
+}
+
 int _mosquitto_message_remove(struct mosquitto *mosq, uint16_t mid, enum mosquitto_msg_direction dir, struct mosquitto_message_all **message)
 {
 	struct mosquitto_message_all *cur, *prev = NULL;
@@ -173,10 +204,12 @@ void _mosquitto_message_retry_check(struct mosquitto *mosq)
 					break;
 				case mosq_ms_wait_pubrel:
 					message->timestamp = now;
+					message->dup = true;
 					_mosquitto_send_pubrec(mosq, message->msg.mid);
 					break;
 				case mosq_ms_wait_pubcomp:
 					message->timestamp = now;
+					message->dup = true;
 					_mosquitto_send_pubrel(mosq, message->msg.mid, true);
 					break;
 				default:
