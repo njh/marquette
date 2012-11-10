@@ -38,14 +38,17 @@ static void on_publish(struct mosquitto *mosq, void *obj, int message_id)
 
 static void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
-    MosquittoClient* client = (MosquittoClient*)obj;
-    NSString *topic = [NSString stringWithUTF8String: message->topic];
-    NSString *payload = [[[NSString alloc] initWithBytes:message->payload
+    MosquittoMessage *mosq_msg = [[MosquittoMessage alloc] init];
+    mosq_msg.topic = [NSString stringWithUTF8String: message->topic];
+    mosq_msg.payload = [[[NSString alloc] initWithBytes:message->payload
                                                   length:message->payloadlen
                                                 encoding:NSUTF8StringEncoding] autorelease];
+    MosquittoClient* client = (MosquittoClient*)obj;
 
     // FIXME: create MosquittoMessage class instead
-    [[client delegate] didReceiveMessage:payload topic:topic];
+    //[[client delegate] didReceiveMessage:payload topic:topic];
+    [[client delegate] didReceiveMessage:mosq_msg];
+    [mosq_msg release];
 }
 
 static void on_subscribe(struct mosquitto *mosq, void *obj, int message_id, int qos_count, const int *granted_qos)

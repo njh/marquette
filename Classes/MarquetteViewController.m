@@ -111,21 +111,23 @@
 	[[self connectButton] setTitle:@"Connect" forState:UIControlStateNormal];
 }
 
-- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic {
-	NSLog(@"%@ => %@", topic, message);
+//- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic {
+- (void) didReceiveMessage:(MosquittoMessage*) mosq_msg {
+
+	NSLog(@"%@ => %@", mosq_msg.topic, mosq_msg.payload);
 
 	UISwitch *sw = nil;
-	if ([topic isEqualToString:@"nanode/red_led"]) {
+	if ([mosq_msg.topic isEqualToString:@"nanode/red_led"]) {
 		sw = redLedSwitch;
-	} else if ([topic isEqualToString:@"nanode/green_led"]) {
+	} else if ([mosq_msg.topic isEqualToString:@"nanode/green_led"]) {
 		sw = greenLedSwitch;
 	} else {
 		return;
 	}
 
-	if ([message isEqualToString:@"1"]) {
+	if ([mosq_msg.payload isEqualToString:@"1"]) {
 		[sw setOn: YES];
-	} else if ([message isEqualToString:@"0"]) {
+	} else if ([mosq_msg.payload isEqualToString:@"0"]) {
 		[sw setOn: NO];
 	}
 }

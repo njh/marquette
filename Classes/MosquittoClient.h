@@ -5,6 +5,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MosquittoMessage.h"
 
 @protocol MosquittoClientDeligate
 
@@ -13,7 +14,8 @@
 - (void) didPublish: (NSUInteger)messageId;
 
 // FIXME: create MosquittoMessage class
-- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic;
+//- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic;
+- (void) didReceiveMessage: (MosquittoMessage*)mosq_msg;
 - (void) didSubscribe: (NSUInteger)messageId grantedQos:(NSArray*)qos;
 - (void) didUnsubscribe: (NSUInteger)messageId;
 
