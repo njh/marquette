@@ -1,31 +1,31 @@
 /*
-Copyright (c) 2010, Roger Light <roger@atchoo.org>
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice,
-   this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. Neither the name of mosquitto nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-*/
+ Copyright (c) 2010, Roger Light <roger@atchoo.org>
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ 3. Neither the name of mosquitto nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #include <assert.h>
 #include <stdlib.h>
@@ -40,11 +40,11 @@ POSSIBILITY OF SUCH DAMAGE.
 void _mosquitto_message_cleanup(struct mosquitto_message_all **message)
 {
 	struct mosquitto_message_all *msg;
-
+    
 	if(!message || !*message) return;
-
+    
 	msg = *message;
-
+    
 	if(msg->msg.topic) _mosquitto_free(msg->msg.topic);
 	if(msg->msg.payload) _mosquitto_free(msg->msg.payload);
 	_mosquitto_free(msg);
@@ -53,9 +53,9 @@ void _mosquitto_message_cleanup(struct mosquitto_message_all **message)
 void _mosquitto_message_cleanup_all(struct mosquitto *mosq)
 {
 	struct mosquitto_message_all *tmp;
-
+    
 	assert(mosq);
-
+    
 	while(mosq->messages){
 		tmp = mosq->messages->next;
 		_mosquitto_message_cleanup(&mosq->messages);
@@ -66,7 +66,7 @@ void _mosquitto_message_cleanup_all(struct mosquitto *mosq)
 int mosquitto_message_copy(struct mosquitto_message *dst, const struct mosquitto_message *src)
 {
 	if(!dst || !src) return MOSQ_ERR_INVAL;
-
+    
 	dst->mid = src->mid;
 	dst->topic = _mosquitto_strdup(src->topic);
 	if(!dst->topic) return MOSQ_ERR_NOMEM;
@@ -92,7 +92,7 @@ int _mosquitto_message_delete(struct mosquitto *mosq, uint16_t mid, enum mosquit
 	struct mosquitto_message_all *message;
 	int rc;
 	assert(mosq);
-
+    
 	rc = _mosquitto_message_remove(mosq, mid, dir, &message);
 	if(rc == MOSQ_ERR_SUCCESS){
 		_mosquitto_message_cleanup(&message);
@@ -103,11 +103,11 @@ int _mosquitto_message_delete(struct mosquitto *mosq, uint16_t mid, enum mosquit
 void mosquitto_message_free(struct mosquitto_message **message)
 {
 	struct mosquitto_message *msg;
-
+    
 	if(!message || !*message) return;
-
+    
 	msg = *message;
-
+    
 	if(msg->topic) _mosquitto_free(msg->topic);
 	if(msg->payload) _mosquitto_free(msg->payload);
 	_mosquitto_free(msg);
@@ -116,10 +116,11 @@ void mosquitto_message_free(struct mosquitto_message **message)
 void _mosquitto_message_queue(struct mosquitto *mosq, struct mosquitto_message_all *message)
 {
 	struct mosquitto_message_all *tail;
-
+    
 	assert(mosq);
 	assert(message);
-
+    
+	mosq->queue_len++;
 	message->next = NULL;
 	if(mosq->messages){
 		tail = mosq->messages;
@@ -137,7 +138,8 @@ void _mosquitto_messages_reconnect_reset(struct mosquitto *mosq)
 	struct mosquitto_message_all *message;
 	struct mosquitto_message_all *prev = NULL;
 	assert(mosq);
-
+    
+	mosq->queue_len = 0;
 	message = mosq->messages;
 	while(message){
 		message->timestamp = 0;
@@ -147,6 +149,7 @@ void _mosquitto_messages_reconnect_reset(struct mosquitto *mosq)
 			}else if(message->msg.qos == 2){
 				message->state = mosq_ms_wait_pubrec;
 			}
+			mosq->queue_len++;
 		}else{
 			if(prev){
 				prev->next = message->next;
@@ -168,7 +171,7 @@ int _mosquitto_message_remove(struct mosquitto *mosq, uint16_t mid, enum mosquit
 	struct mosquitto_message_all *cur, *prev = NULL;
 	assert(mosq);
 	assert(message);
-
+    
 	cur = mosq->messages;
 	while(cur){
 		if(cur->msg.mid == mid && cur->direction == dir){
@@ -178,6 +181,7 @@ int _mosquitto_message_remove(struct mosquitto *mosq, uint16_t mid, enum mosquit
 				mosq->messages = cur->next;
 			}
 			*message = cur;
+			mosq->queue_len--;
 			return MOSQ_ERR_SUCCESS;
 		}
 		prev = cur;
@@ -191,7 +195,7 @@ void _mosquitto_message_retry_check(struct mosquitto *mosq)
 	struct mosquitto_message_all *message;
 	time_t now = time(NULL);
 	assert(mosq);
-
+    
 	message = mosq->messages;
 	while(message){
 		if(message->timestamp + mosq->message_retry < now){
@@ -230,7 +234,7 @@ int _mosquitto_message_update(struct mosquitto *mosq, uint16_t mid, enum mosquit
 {
 	struct mosquitto_message_all *message;
 	assert(mosq);
-
+    
 	message = mosq->messages;
 	while(message){
 		if(message->msg.mid == mid && message->direction == dir){
