@@ -41,11 +41,10 @@ static void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto
     MosquittoMessage *mosq_msg = [[MosquittoMessage alloc] init];
     mosq_msg.topic = [NSString stringWithUTF8String: message->topic];
     mosq_msg.payload = [[[NSString alloc] initWithBytes:message->payload
-                                                  length:message->payloadlen
-                                                encoding:NSUTF8StringEncoding] autorelease];
+                                                 length:message->payloadlen
+                                               encoding:NSUTF8StringEncoding] autorelease];
     MosquittoClient* client = (MosquittoClient*)obj;
-
-    // FIXME: create MosquittoMessage class instead
+    
     //[[client delegate] didReceiveMessage:payload topic:topic];
     [[client delegate] didReceiveMessage:mosq_msg];
     [mosq_msg release];
@@ -83,7 +82,7 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
         [self setPort: 1883];
         [self setKeepAlive: 60];
         [self setCleanSession: YES];
-
+        
         mosq = mosquitto_new(cstrClientId, cleanSession, self);
         mosquitto_connect_callback_set(mosq, on_connect);
         mosquitto_disconnect_callback_set(mosq, on_disconnect);
@@ -100,18 +99,18 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
 - (void) connect {
     const char *cstrHost = [host cStringUsingEncoding:NSASCIIStringEncoding];
     const char *cstrUsername = NULL, *cstrPassword = NULL;
-
+    
     if (username)
         cstrUsername = [username cStringUsingEncoding:NSUTF8StringEncoding];
-
+    
     if (password)
         cstrPassword = [password cStringUsingEncoding:NSUTF8StringEncoding];
-
+    
     // FIXME: check for errors
     mosquitto_username_pw_set(mosq, cstrUsername, cstrPassword);
-
+    
     mosquitto_connect(mosq, cstrHost, port, keepAlive);
-
+    
     // Setup timer to handle network events
     // FIXME: better way to do this - hook into iOS Run Loop select() ?
     // or run in seperate thread?
@@ -139,12 +138,14 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
     mosquitto_loop(mosq, 1, 1);
 }
 
-// FIXME: add QoS parameter?
-- (void)publishString: (NSString *)payload toTopic:(NSString *)topic retain:(BOOL)retain {
+
+- (void)publishString: (NSString *)payload toTopic:(NSString *)topic withQos:(NSUInteger)qos retain:(BOOL)retain {
     const char* cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
     const uint8_t* cstrPayload = (const uint8_t*)[payload cStringUsingEncoding:NSUTF8StringEncoding];
-    mosquitto_publish(mosq, NULL, cstrTopic, [payload length], cstrPayload, 0, retain);
+    mosquitto_publish(mosq, NULL, cstrTopic, [payload length], cstrPayload, qos, retain);
 }
+
+
 
 - (void)subscribe: (NSString *)topic {
     [self subscribe:topic withQos:0];
@@ -171,12 +172,12 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
         mosquitto_destroy(mosq);
         mosq = NULL;
     }
-
+    
     if (timer) {
         [timer invalidate];
         timer = nil;
     }
-
+    
     [super dealloc];
 }
 

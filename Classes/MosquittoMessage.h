@@ -19,17 +19,6 @@
 }
 
 
-/* 
-struct mosquitto_message{
-	int mid;
-	char *topic;
-	void *payload;
-	int payloadlen;
-	int qos;
-	bool retain;
-}; 
-*/
-
 @property (readwrite, assign) unsigned short mid;
 @property (readwrite, retain) NSString *topic;
 @property (readwrite, retain) NSString *payload;

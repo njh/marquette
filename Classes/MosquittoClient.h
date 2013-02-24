@@ -13,8 +13,6 @@
 - (void) didDisconnect;
 - (void) didPublish: (NSUInteger)messageId;
 
-// FIXME: create MosquittoMessage class
-//- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic;
 - (void) didReceiveMessage: (MosquittoMessage*)mosq_msg;
 - (void) didSubscribe: (NSUInteger)messageId grantedQos:(NSArray*)qos;
 - (void) didUnsubscribe: (NSUInteger)messageId;
@@ -30,7 +28,7 @@
     NSString *password;
     unsigned short keepAlive;
     BOOL cleanSession;
-
+    
     id<MosquittoClientDeligate> delegate;
     NSTimer *timer;
 }
@@ -54,7 +52,7 @@
 - (void) reconnect;
 - (void) disconnect;
 
-- (void)publishString: (NSString *)payload toTopic:(NSString *)topic retain:(BOOL)retain;
+- (void)publishString: (NSString *)payload toTopic:(NSString *)topic withQos:(NSUInteger)qos retain:(BOOL)retain;
 //- (void)publishMessage
 
 - (void)subscribe: (NSString *)topic;

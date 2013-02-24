@@ -69,11 +69,11 @@
 	MosquittoClient *mosq = [app mosquittoClient];
     if ([sender isOn]) {
         NSLog(@"Red LED On");
-		[mosq publishString:@"1" toTopic:@"nanode/red_led" retain:YES];
+		[mosq publishString:@"1" toTopic:@"nanode/red_led" withQos:0 retain:YES];
     }
     else {
         NSLog(@"Red LED Off");
-		[mosq publishString:@"0" toTopic:@"nanode/red_led" retain:YES];
+		[mosq publishString:@"0" toTopic:@"nanode/red_led" withQos:0 retain:YES];
     }
 }
 
@@ -82,11 +82,11 @@
 	MosquittoClient *mosq = [app mosquittoClient];
     if ([sender isOn]) {
         NSLog(@"Green LED On");
-		[mosq publishString:@"1" toTopic:@"nanode/green_led" retain:YES];
+		[mosq publishString:@"1" toTopic:@"nanode/green_led" withQos:0 retain:YES];
     }
     else {
         NSLog(@"Green LED Off");
-		[mosq publishString:@"0" toTopic:@"nanode/green_led" retain:YES];
+		[mosq publishString:@"0" toTopic:@"nanode/green_led" withQos:0 retain:YES];
     }
 }
 
@@ -111,7 +111,6 @@
 	[[self connectButton] setTitle:@"Connect" forState:UIControlStateNormal];
 }
 
-//- (void) didReceiveMessage: (NSString*)message topic:(NSString*)topic {
 - (void) didReceiveMessage:(MosquittoMessage*) mosq_msg {
 
 	NSLog(@"%@ => %@", mosq_msg.topic, mosq_msg.payload);
