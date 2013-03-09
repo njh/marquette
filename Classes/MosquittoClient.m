@@ -139,6 +139,20 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
 }
 
 
+- (void)setWill: (NSString *)payload toTopic:(NSString *)willTopic withQos:(NSUInteger)willQos retain:(BOOL)retain;
+{
+    const char* cstrTopic = [willTopic cStringUsingEncoding:NSUTF8StringEncoding];
+    const uint8_t* cstrPayload = (const uint8_t*)[payload cStringUsingEncoding:NSUTF8StringEncoding];
+    mosquitto_will_set(mosq, cstrTopic, [payload length], cstrPayload, willQos, retain);
+}
+
+
+- (void)clearWill
+{
+    mosquitto_will_clear(mosq);
+}
+
+
 - (void)publishString: (NSString *)payload toTopic:(NSString *)topic withQos:(NSUInteger)qos retain:(BOOL)retain {
     const char* cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
     const uint8_t* cstrPayload = (const uint8_t*)[payload cStringUsingEncoding:NSUTF8StringEncoding];

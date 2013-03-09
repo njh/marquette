@@ -52,6 +52,9 @@
 - (void) reconnect;
 - (void) disconnect;
 
+- (void)setWill: (NSString *)payload toTopic:(NSString *)willTopic withQos:(NSUInteger)willQos retain:(BOOL)retain;
+- (void)clearWill;
+
 - (void)publishString: (NSString *)payload toTopic:(NSString *)topic withQos:(NSUInteger)qos retain:(BOOL)retain;
 //- (void)publishMessage
 
