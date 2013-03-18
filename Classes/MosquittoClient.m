@@ -81,7 +81,7 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
         [self setHost: nil];
         [self setPort: 1883];
         [self setKeepAlive: 60];
-        [self setCleanSession: YES];
+        [self setCleanSession: NO]; //NOTE: this isdisable clean to keep the broker remember this client
         
         mosq = mosquitto_new(cstrClientId, cleanSession, self);
         mosquitto_connect_callback_set(mosq, on_connect);
@@ -143,7 +143,8 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
 {
     const char* cstrTopic = [willTopic cStringUsingEncoding:NSUTF8StringEncoding];
     const uint8_t* cstrPayload = (const uint8_t*)[payload cStringUsingEncoding:NSUTF8StringEncoding];
-    mosquitto_will_set(mosq, cstrTopic, [payload length], cstrPayload, willQos, retain);
+    size_t cstrlen = [payload lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    mosquitto_will_set(mosq, cstrTopic, cstrlen, cstrPayload, willQos, retain);
 }
 
 
@@ -156,7 +157,9 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
 - (void)publishString: (NSString *)payload toTopic:(NSString *)topic withQos:(NSUInteger)qos retain:(BOOL)retain {
     const char* cstrTopic = [topic cStringUsingEncoding:NSUTF8StringEncoding];
     const uint8_t* cstrPayload = (const uint8_t*)[payload cStringUsingEncoding:NSUTF8StringEncoding];
-    mosquitto_publish(mosq, NULL, cstrTopic, [payload length], cstrPayload, qos, retain);
+    size_t cstrlen = [payload lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    mosquitto_publish(mosq, NULL, cstrTopic, cstrlen, cstrPayload, qos, retain);
+    
 }
 
 
