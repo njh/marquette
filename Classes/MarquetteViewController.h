@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MosquittoClient.h"
 
-@interface MarquetteViewController : UIViewController <MosquittoClientDeligate> {
+@interface MarquetteViewController : UIViewController <MosquittoClientDelegate> {
 	UISwitch *redLedSwitch;
 	UISwitch *greenLedSwitch;
 

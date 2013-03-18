@@ -1,31 +1,31 @@
 /*
-Copyright (c) 2010,2011 Roger Light <roger@atchoo.org>
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice,
-   this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. Neither the name of mosquitto nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
-*/
+ Copyright (c) 2010,2011 Roger Light <roger@atchoo.org>
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ 
+ 1. Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ 3. Neither the name of mosquitto nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #ifndef _MOSQUITTO_INTERNAL_H_
 #define _MOSQUITTO_INTERNAL_H_
@@ -50,10 +50,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef WIN32
 #	if _MSC_VER < 1600
-		typedef unsigned char uint8_t;
-		typedef unsigned short uint16_t;
-		typedef unsigned int uint32_t;
-		typedef unsigned long long uint64_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned long long uint64_t;
 #	else
 #		include <stdint.h>
 #	endif
@@ -63,7 +63,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <mosquitto.h>
 #ifdef WITH_BROKER
-struct _mosquitto_client_msg;
+struct mosquitto_client_msg;
 #endif
 
 enum mosquitto_msg_direction {
@@ -158,27 +158,28 @@ struct mosquitto {
 #ifdef WITH_BROKER
 	bool is_bridge;
 	struct _mqtt3_bridge *bridge;
-	struct _mosquitto_client_msg *msgs;
+	struct mosquitto_client_msg *msgs;
 	struct _mosquitto_acl_user *acl_list;
 	struct _mqtt3_listener *listener;
 	time_t disconnect_t;
 	int pollfd_index;
 #else
-	void *obj;
+	void *userdata;
 	bool in_callback;
 	unsigned int message_retry;
 	time_t last_retry_check;
 	struct mosquitto_message_all *messages;
-	void (*on_connect)(struct mosquitto *, void *obj, int rc);
-	void (*on_disconnect)(struct mosquitto *, void *obj, int rc);
-	void (*on_publish)(struct mosquitto *, void *obj, int mid);
-	void (*on_message)(struct mosquitto *, void *obj, const struct mosquitto_message *message);
-	void (*on_subscribe)(struct mosquitto *, void *obj, int mid, int qos_count, const int *granted_qos);
-	void (*on_unsubscribe)(struct mosquitto *, void *obj, int mid);
-	void (*on_log)(struct mosquitto *, void *obj, int level, const char *str);
+	void (*on_connect)(struct mosquitto *, void *userdata, int rc);
+	void (*on_disconnect)(struct mosquitto *, void *userdata, int rc);
+	void (*on_publish)(struct mosquitto *, void *userdata, int mid);
+	void (*on_message)(struct mosquitto *, void *userdata, const struct mosquitto_message *message);
+	void (*on_subscribe)(struct mosquitto *, void *userdata, int mid, int qos_count, const int *granted_qos);
+	void (*on_unsubscribe)(struct mosquitto *, void *userdata, int mid);
+	void (*on_log)(struct mosquitto *, void *userdata, int level, const char *str);
 	//void (*on_error)();
 	char *host;
 	int port;
+	int queue_len;
 #endif
 };
 
