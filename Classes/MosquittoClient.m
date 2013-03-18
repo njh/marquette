@@ -81,7 +81,7 @@ static void on_unsubscribe(struct mosquitto *mosq, void *obj, int message_id)
         [self setHost: nil];
         [self setPort: 1883];
         [self setKeepAlive: 60];
-        [self setCleanSession: NO]; //NOTE: this isdisable clean to keep the broker remember this client
+        [self setCleanSession: YES]; //NOTE: this isdisable clean to keep the broker remember this client
         
         mosq = mosquitto_new(cstrClientId, cleanSession, self);
         mosquitto_connect_callback_set(mosq, on_connect);
