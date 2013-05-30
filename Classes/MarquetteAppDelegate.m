@@ -10,7 +10,6 @@
 #import "MarquetteViewController.h"
 
 #include "getMacAddress.h"
-#include "mosquitto.h"
 
 
 @implementation MarquetteAppDelegate

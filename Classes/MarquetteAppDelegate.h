@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MosquittoClient.h"
+#import <MosquittoClient/MosquittoClient.h>
 
 @class MarquetteViewController;
 

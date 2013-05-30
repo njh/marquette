@@ -8,7 +8,7 @@
 
 #import "MarquetteViewController.h"
 #import "MarquetteAppDelegate.h"
-#import "MosquittoClient.h"
+#import <MosquittoClient/MosquittoClient.h>
 
 @implementation MarquetteViewController
 
