@@ -10,7 +10,7 @@
 
 @implementation MosquittoMessage
 
-@synthesize mid, topic, payload, payloadlen, qos, retain;
+@synthesize mid, topic, payload, payloadlen, qos, retained;
 
 -(id)init
 {
@@ -19,7 +19,7 @@
     self.payload = nil;
     self.payloadlen = 0;
     self.qos = 0;
-    self.retain = FALSE;
+    self.retained = FALSE;
     return self;
 }
 

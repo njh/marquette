@@ -15,7 +15,7 @@
     NSString *payload;
     unsigned short payloadlen;
     unsigned short qos;
-    BOOL retain;
+    BOOL retained;
 }
 
 
@@ -24,7 +24,7 @@
 @property (readwrite, retain) NSString *payload;
 @property (readwrite, assign) unsigned short payloadlen;
 @property (readwrite, assign) unsigned short qos;
-@property (readwrite, assign) BOOL retain;
+@property (readwrite, assign) BOOL retained;
 
 -(id)init;
 
