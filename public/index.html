@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+  	<meta charset="utf-8" />
+    <title>node.js, Server Sent Events and MQTT</title>
+    <link rel="stylesheet" href="./css/style.css"/>
+  </head>
+
+  <body>
+
+  <h1>node.js, Server Sent Events and MQTT</h1>
+  <ul class="data">
+  </ul>
+
+  <input id='submit' type="submit" />
+
+  <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  <script type="text/javascript">
+    var source = new EventSource('/update-stream');
+
+    source.onopen = function(e) {
+      console.log("EventSource connection open");
+    };
+
+    source.onmessage = function(e) {
+      var obj = JSON.parse(e.data);
+      console.log(obj);
+      $('ul').append('<li>' + obj.payload + '</li>');
+    };
+
+    source.onerror = function(e) {
+      console.log("Event source error: "+e);
+    };
+
+    function getTimeStamp() {
+        var now = new Date();
+        return (now.getFullYear() + '-' +
+               (now.getMonth() + 1) + '-' +
+               (now.getDate()) + " " +
+                now.getHours() + ':' +
+              ((now.getMinutes() < 10)
+                 ? ("0" + now.getMinutes())
+                 : (now.getMinutes())) + ':' +
+              ((now.getSeconds() < 10)
+                 ? ("0" + now.getSeconds())
+                 : (now.getSeconds())));
+    }
+
+    $('#submit').click(function() {
+      $.ajax({
+          url: '/topics/test',
+          type: 'post',
+          dataType: 'json',
+          data: {payload: getTimeStamp()}
+      });
+    });
+  </script>
+
+  </body>
+</html>
