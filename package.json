@@ -1,11 +1,15 @@
 {
   "name": "marquette",
   "version": "0.0.1",
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/njh/marquette.git"
+  },
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
     "express": "3.4.4",
-    "mqtt": "~0.3.3",
+    "mqtt": "~0.3.3"
   }
 }
