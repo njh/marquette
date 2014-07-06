@@ -9,7 +9,10 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.4.4",
-    "mqtt": "~0.3.3"
+    "express": "~4.5.0",
+    "mqtt": "~0.3.3",
+    "body-parser": "~1.4.3",
+    "errorhandler": "~1.1.1",
+    "morgan": "~1.1.1"
   }
 }
