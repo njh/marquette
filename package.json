@@ -1,18 +1,22 @@
 {
-  "name": "marquette",
-  "version": "0.0.1",
-  "repository": {
-    "type" : "git",
-    "url" : "http://github.com/njh/marquette.git"
-  },
-  "scripts": {
-    "start": "node app.js"
-  },
-  "dependencies": {
-    "express": "~4.5.0",
-    "mqtt": "~0.3.3",
-    "body-parser": "~1.4.3",
-    "errorhandler": "~1.1.1",
-    "morgan": "~1.1.1"
-  }
+    "name": "marquette",
+    "version": "0.0.1",
+    "repository": {
+        "type" : "git",
+        "url" : "http://github.com/njh/marquette.git"
+    },
+    "scripts": {
+        "start": "node app.js"
+    },
+    "dependencies": {
+        "express": "~4.5.0",
+        "nopt": "~2.2.0",
+        "mqtt": "~0.3.0",
+        "body-parser": "~1.4.0",
+        "errorhandler": "~1.1.0",
+        "morgan": "~1.1.0"
+    },
+    "engines": {
+        "node": ">=0.8"
+    }
 }

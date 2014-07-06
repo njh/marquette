@@ -1,12 +1,26 @@
-
 /**
- * Module dependencies.
- */
+ * Copyright 2014 Nicholas Humfrey
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ **/
 
-var express = require('express');
 var http = require('http');
+var https = require('https');
+var util = require("util");
+var express = require("express");
+var nopt = require("nopt");
+var path = require("path");
 var mqtt = require('mqtt');
-var path = require('path');
 
 // Middleware
 var bodyParser = require('body-parser');
@@ -14,10 +28,6 @@ var errorhandler = require('errorhandler');
 var morgan  = require('morgan');
 
 var app = express();
-
-// all environments
-app.set('port', process.env.PORT || 3000);
-app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.json());
 app.use(morgan());
 
@@ -27,52 +37,116 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 
+var knownOpts = {
+    "settings":[path],
+    "v": Boolean,
+    "help": Boolean
+};
+var shortHands = {
+    "s":["--settings"],
+    "?":["--help"]
+};
+nopt.invalidHandler = function(k,v,t) {
+    console.log(k,v,t);
+}
+
+var parsedArgs = nopt(knownOpts,shortHands,process.argv,2)
+
+if (parsedArgs.help) {
+    console.log("Marquette");
+    console.log("Usage: node app.js [-v] [-?] [--settings settings.js]");
+    console.log("");
+    console.log("Options:");
+    console.log("  -s, --settings FILE  use specified settings file");
+    console.log("  -v                   enable verbose output");
+    console.log("  -?, --help           show usage");
+    process.exit();
+}
+
+var settingsFile = parsedArgs.settings || "./settings";
+try {
+    var settings = require(settingsFile);
+} catch(err) {
+    if (err.code == 'MODULE_NOT_FOUND') {
+        console.log("Unable to load settings file "+settingsFile);
+    } else {
+        console.log(err);
+    }
+    process.exit();
+}
+
+if (parsedArgs.v) {
+    settings.verbose = true;
+}
+
+settings.uiHost = settings.uiHost||"0.0.0.0";
+settings.uiPort = settings.uiPort||1890;
+settings.mqttHost = settings.mqttHost||"127.0.0.1";
+settings.mqttPort = settings.mqttPort||1883;
+
+process.on('uncaughtException',function(err) {
+    util.log('[marquette] Uncaught Exception:');
+    util.log(err.stack);
+    process.exit(1);
+});
+
+process.on('SIGINT', function () {
+    process.exit();
+});
+
+
+
+
+
+
+
+
 browsers = [];
 
 // Connect to the MQTT sever
-client = mqtt.createClient(1883, 'test.mosquitto.org');
+client = mqtt.createClient(settings.mqttPort, settings.mqttHost);
 client.subscribe('test');
 
 // When a message is received from the MQTT server, pass it on to the browsers
 client.on('message', function(topic, payload) {
-  console.log("Received MQTT: "+payload);
+    console.log("Received MQTT: "+payload);
 
-  browsers.forEach(function(res) {
-    console.log("  informing browser: "+res);
-    res.write("data: " + JSON.stringify({topic:topic, payload:payload}) + "\n\n");
-  });
+    browsers.forEach(function(res) {
+        console.log("  informing browser: "+res);
+        res.write("data: " + JSON.stringify({topic:topic, payload:payload}) + "\n\n");
+    });
 });
 
 // Send a ping every 25 seconds to the browsers to keep the HTTP connections open
 setInterval(function() {
-  browsers.forEach(function(res) {
-    res.write(": ping\n\n");
-  });
+    browsers.forEach(function(res) {
+        res.write(": ping\n\n");
+    });
 }, 25000);
 
 
 app.get('/update-stream', function(req, res) {
-  req.socket.setTimeout(Infinity);
+    req.socket.setTimeout(Infinity);
 
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache'
-  });
-  res.write("\n");
-  browsers.push(res);
+    res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache'
+    });
+    res.write("\n");
+    browsers.push(res);
 
-  req.on("close", function() {
-    index = browsers.indexOf(req);
-    browsers.splice(index, 1);
-  });
+    req.on("close", function() {
+        index = browsers.indexOf(req);
+        browsers.splice(index, 1);
+    });
 
 });
 
 
 app.post('/topics/:topic', function(req, res) {
-  console.log("Publishing: "+req.body.payload);
-  client.publish(req.params.topic, req.body.payload);
-  res.send(204);
+    console.log("Publishing: "+req.body.payload);
+    client.publish(req.params.topic, req.body.payload);
+    res.send(204);
 });
 
 
@@ -80,6 +154,6 @@ app.use("/",express.static(__dirname + '/../public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+http.createServer(app).listen(settings.uiPort, settings.uiHost, function(){
+    console.log('Express server listening on port ' + settings.uiPort);
 });
