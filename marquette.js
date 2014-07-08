@@ -54,7 +54,7 @@ var parsedArgs = nopt(knownOpts,shortHands,process.argv,2)
 
 if (parsedArgs.help) {
     console.log("Marquette");
-    console.log("Usage: node app.js [-v] [-?] [--settings settings.js]");
+    console.log("Usage: node marquette.js [-v] [-?] [--settings settings.js]");
     console.log("");
     console.log("Options:");
     console.log("  -s, --settings FILE  use specified settings file");
