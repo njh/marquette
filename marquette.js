@@ -15,7 +15,6 @@
  **/
 
 var http = require('http');
-var https = require('https');
 var util = require("util");
 var express = require("express");
 var nopt = require("nopt");
