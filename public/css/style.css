@@ -1,4 +1,42 @@
-body {
-  padding: 10px;
-  font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+body
+{
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  font-family: "Gill Sans", "Lucida Grande", Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.gridster {
+  padding: 0px;
+  margin: 0px;
+  border: none;
+}
+
+.gridster .tile {
+  border: 2px transparent dashed;
+  background-color: #E6E6E6;
+  cursor: default;
+}
+
+.gridster .tile.editable {
+  border: 2px black dashed;
+  cursor: move;
+}
+
+
+#footer {
+   position:fixed;
+   left:0px;
+   bottom:0px;
+   height:30px;
+   width:100%;
+   background:#999;
+   padding: 5px;
+   z-index: 20;
+}
+
+#edit {
+  float: right;
+  margin-right: 20px;
 }
