@@ -116,29 +116,29 @@ client.on('message', function(topic, payload) {
     });
 });
 
-// Send a ping every 25 seconds to the browsers to keep the HTTP connections open
+
+// Send a ping every 20 seconds to the browsers to keep the HTTP connections open
 setInterval(function() {
     browsers.forEach(function(res) {
         res.write(": ping\n\n");
     });
-}, 25000);
+}, 20000);
 
 
 app.get('/update-stream', function(req, res) {
-    req.socket.setTimeout(Infinity);
-
+    req.socket.setNoDelay(true);
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache'
     });
-    res.write("\n");
+    res.write(":\n");
+    
     browsers.push(res);
 
     req.on("close", function() {
         index = browsers.indexOf(req);
         browsers.splice(index, 1);
     });
-
 });
 
 

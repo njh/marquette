@@ -54,6 +54,23 @@ $(function(){ //DOM Ready
         init_gridster();
     });
 
+
+    var source = new EventSource('/update-stream');
+    console.log("EventSource="+source);
+
+    source.onopen = function(e) {
+      console.log("EventSource connection open");
+    };
+
+    source.onmessage = function(e) {
+      var obj = JSON.parse(e.data);
+      console.log(obj);
+    };
+
+    source.onerror = function(e) {
+      console.log("Event source error: "+e);
+    };
+
 });
 
 
