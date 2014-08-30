@@ -28,6 +28,7 @@ var morgan  = require('morgan');
 
 var app = express();
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(morgan());
 
 // development only
@@ -142,9 +143,11 @@ app.get('/update-stream', function(req, res) {
 });
 
 
-app.post('/topics/:topic', function(req, res) {
-    console.log("Publishing: "+req.body.payload);
-    client.publish(req.params.topic, req.body.payload);
+
+app.post('/topics/*', function(req, res) {
+    var topic = req.params[0];
+    console.log("Publishing: '"+req.body.payload+"' to '"+topic+"'");
+    client.publish(topic, req.body.payload);
     res.send(204);
 });
 

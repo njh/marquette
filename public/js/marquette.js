@@ -71,6 +71,31 @@ $(function(){ //DOM Ready
       console.log("Event source error: "+e);
     };
 
-});
 
+
+    function getTimeStamp() {
+        var now = new Date();
+        return (now.getFullYear() + '-' +
+               (now.getMonth() + 1) + '-' +
+               (now.getDate()) + " " +
+                now.getHours() + ':' +
+              ((now.getMinutes() < 10)
+                 ? ("0" + now.getMinutes())
+                 : (now.getMinutes())) + ':' +
+              ((now.getSeconds() < 10)
+                 ? ("0" + now.getSeconds())
+                 : (now.getSeconds())));
+    }
+
+    $('#publish').click(function() {
+      console.log("Posting...");
+      $.ajax({
+          url: '/topics/test',
+          type: 'post',
+          dataType: 'json',
+          data: {payload: getTimeStamp()}
+      });
+    });
+
+});
 
