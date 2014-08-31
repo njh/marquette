@@ -156,6 +156,7 @@ app.use("/",express.static(__dirname + '/../public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-http.createServer(app).listen(settings.uiPort, settings.uiHost, function(){
+var server = http.createServer(app)
+server.listen(settings.uiPort, settings.uiHost, function(){
     console.log('Express server listening on port ' + settings.uiPort);
 });
