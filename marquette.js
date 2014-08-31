@@ -102,6 +102,7 @@ process.on('SIGINT', function () {
 
 
 browsers = [];
+topics = {};
 
 // Connect to the MQTT sever
 client = mqtt.createClient(settings.mqttPort, settings.mqttHost);
@@ -110,6 +111,7 @@ client.subscribe('test');
 // When a message is received from the MQTT server, pass it on to the browsers
 client.on('message', function(topic, payload) {
     console.log("Received MQTT: "+payload);
+    topics[topic] = payload;
 
     browsers.forEach(function(res) {
         console.log("  informing browser: "+res);
@@ -133,7 +135,7 @@ app.get('/update-stream', function(req, res) {
         'Cache-Control': 'no-cache'
     });
     res.write(":\n");
-    
+
     browsers.push(res);
 
     req.on("close", function() {
@@ -142,7 +144,19 @@ app.get('/update-stream', function(req, res) {
     });
 });
 
+app.get('/topics', function(req, res) {
+  res.send(topics);
+});
 
+app.get('/topics/*', function(req, res) {
+    var topic = req.params[0];
+    res.type('text/plain');
+    if (topic in topics) {
+        res.status(200).send(topics[topic]);
+    } else {
+        res.status(404).send('Topic Not Found');
+    }
+});
 
 app.post('/topics/*', function(req, res) {
     var topic = req.params[0];
