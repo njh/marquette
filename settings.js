@@ -24,7 +24,7 @@ module.exports = {
     uiPort: 1890,
 
     // the hostname of the MQTT broker to send and receive messages to
-    mqttHost: "test.mosquitto.org",
+    mqttHost: "localhost",
 
     // the tcp port that the MQTT broker listening on
     //mqttPort: 1883,
