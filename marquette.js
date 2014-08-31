@@ -148,7 +148,7 @@ app.post('/topics/*', function(req, res) {
     var topic = req.params[0];
     console.log("Publishing: '"+req.body.payload+"' to '"+topic+"'");
     client.publish(topic, req.body.payload);
-    res.send(204);
+    res.status(204).end();
 });
 
 
