@@ -103,6 +103,8 @@ process.on('SIGINT', function () {
 
 browsers = [];
 topics = {};
+tiles = require('./tiles.json');
+
 
 // Connect to the MQTT sever
 client = mqtt.createClient(settings.mqttPort, settings.mqttHost);
@@ -127,6 +129,10 @@ setInterval(function() {
     });
 }, 20000);
 
+
+app.get('/tiles', function(req, res) {
+  res.send(tiles);
+});
 
 app.get('/update-stream', function(req, res) {
     req.socket.setNoDelay(true);
