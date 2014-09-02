@@ -3,6 +3,7 @@ Marquette Roadmap
 
 Version 0
 ---------
+"Lets get something out there"
 
 * Basic functionality and send and receive MQTT messages
 * Two Tile types:
@@ -12,6 +13,7 @@ Version 0
 
 Version 1
 ---------
+"Make everything less hacky"
 
 * Multiple sizes of tiles
 * Modular and extensible Tile Types system
@@ -33,6 +35,7 @@ Version 1
     - type
     - topic
     - units
+* Add a test suite
 
 
 Version 2
