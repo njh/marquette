@@ -3,7 +3,7 @@
       "row": 1,
       "col": 1,
       "type": "button",
-      "label": "Test On",
+      "name": "Test On",
       "topic": "test/button",
       "payload": "on"
     },
@@ -11,7 +11,7 @@
       "row": 1,
       "col": 2,
       "type": "button",
-      "label": "Test Off",
+      "name": "Test Off",
       "topic": "test/button",
       "payload": "off"
     }

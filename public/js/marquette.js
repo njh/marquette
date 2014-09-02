@@ -39,8 +39,24 @@ $(function(){ //DOM Ready
 
     $.getJSON("tiles",function(tiles) {
         $.each(tiles, function(i, tile) {
-            var div = $("<div>"+i+"</div>").attr('id', "tile"+i).addClass('tile');
+            var div = $("<div></div>").attr('id', "tile"+i).addClass('tile');
             $.each(tile, function(k, v) { div.data(k, v) });
+
+            if (tile.type == 'button') {
+                var button = $('<button>'+tile.name+'</button>').attr('type', 'button');
+                button.on("click", function(event) {
+                    $.ajax({
+                        url: '/topics/'+tile.topic,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {payload: tile.payload}
+                    });
+                });
+                button.appendTo(div);
+            } else {
+                div.html("Unknown tile type: "+tile.type);
+            }
+
             gridster.add_widget(div, size_x=1, size_y=1, tile.col, tile.row);
         });
     });
@@ -100,16 +116,6 @@ $(function(){ //DOM Ready
                  ? ("0" + now.getSeconds())
                  : (now.getSeconds())));
     }
-
-    $('#publish').click(function() {
-      console.log("Posting...");
-      $.ajax({
-          url: '/topics/test',
-          type: 'post',
-          dataType: 'json',
-          data: {payload: getTimeStamp()}
-      });
-    });
 
 });
 
