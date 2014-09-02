@@ -47,16 +47,16 @@ $(function(){ //DOM Ready
 
 
     $("#edit").on("click", function(event) {
-      var target = $( event.target );
-      if (target.html() == 'Edit...') {
-          $( '.tile' ).addClass('editable');
-          gridster.enable();
-          target.html('Save');
-      } else {
-          $( '.tile' ).removeClass('editable');
-          gridster.disable();
-          target.html('Edit...');
-      }
+        var target = $( event.target );
+        if (target.html() == 'Edit...') {
+            $( '.tile' ).addClass('editable');
+            gridster.enable();
+            target.html('Save');
+        } else {
+            $( '.tile' ).removeClass('editable');
+            gridster.disable();
+            target.html('Edit...');
+        }
     });
 
 
