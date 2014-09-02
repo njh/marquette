@@ -1,10 +1,18 @@
+html,body {
+  min-height:100%;
+}
+
 body
 {
   margin: 0px;
+  background: #EEEEEE;
   padding: 0px;
   border: none;
   font-family: "Gill Sans", "Lucida Grande", Helvetica, Arial, sans-serif;
   overflow: hidden;
+
+  -webkit-user-select: none; /* disable selection/Copy on IOS */
+  -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
 }
 
 .gridster {
