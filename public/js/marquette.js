@@ -84,6 +84,7 @@ $(function(){ //DOM Ready
         init_gridster();
     });
 
+    FastClick.attach(document.body);
 
     var source = new EventSource('/update-stream');
     console.log("EventSource="+source);
