@@ -37,6 +37,15 @@ $(function(){ //DOM Ready
 
     var gridster = init_gridster();
 
+    $.getJSON("tiles",function(tiles) {
+        $.each(tiles, function(i, tile) {
+            var div = $("<div>"+i+"</div>").attr('id', "tile"+i).addClass('tile');
+            $.each(tile, function(k, v) { div.data(k, v) });
+            gridster.add_widget(div, size_x=1, size_y=1, tile.col, tile.row);
+        });
+    });
+
+
     $("#edit").on("click", function(event) {
       var target = $( event.target );
       if (target.html() == 'Edit...') {
