@@ -16,22 +16,27 @@ $(function(){ //DOM Ready
         var tile_size_y = Math.floor((height - (rows * min_margin * 2) - min_margin) / rows);
         if (tile_size_y % 2 == 1)
             tile_size_y -= 1;
-          
+
         var tile_size = Math.min(tile_size_x, tile_size_y);
         var margin_x = Math.floor((win.width() - (tile_size * columns)) / (columns*2));
         var margin_y = Math.floor((height - (tile_size * rows)) / (rows*2));
-      
-        return $(".gridster").gridster({
+
+        var gridster = $(".gridster").gridster({
           widget_selector: ".tile",
           widget_base_dimensions: [tile_size, tile_size],
           widget_margins: [margin_x, margin_y],
           min_cols: columns,
           max_cols: columns
         }).data('gridster');
+
+        // Disable dragging
+        gridster.disable();
+
+        return gridster;
     }
-    
+
     var gridster = init_gridster();
-    
+
     $("#edit").on("click", function(event) {
       var target = $( event.target );
       if (target.html() == 'Edit...') {
@@ -44,7 +49,7 @@ $(function(){ //DOM Ready
           target.html('Edit...');
       }
     });
-    
+
 
     $( window ).resize(function() {
         var gridster = $('.gridster').data('gridster');
