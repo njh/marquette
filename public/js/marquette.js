@@ -53,6 +53,11 @@ $(function(){ //DOM Ready
                     });
                 });
                 button.appendTo(div);
+            } else if (tile.type == 'text') {
+                div.html(
+                  '<label>'+tile.name+'</label>'+
+                  '<div class="text"></div>'
+                );
             } else {
                 div.html("Unknown tile type: "+tile.type);
             }
@@ -93,13 +98,21 @@ $(function(){ //DOM Ready
       console.log("EventSource connection open");
     };
 
-    source.onmessage = function(e) {
-      var obj = JSON.parse(e.data);
-      console.log(obj);
-    };
-
     source.onerror = function(e) {
       console.log("Event source error: "+e);
+    };
+
+    source.onmessage = function(e) {
+      var obj = JSON.parse(e.data);
+      $('.tile').each(function() {
+          var tile = $(this);
+          if (obj.topic == tile.data('topic')) {
+              var text = tile.find('.text');
+              if (text) {
+                  text.html(obj.payload);
+              }
+          }
+      });
     };
 
 

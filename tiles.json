@@ -4,7 +4,7 @@
       "col": 1,
       "type": "button",
       "name": "Test On",
-      "topic": "test/button",
+      "topic": "test",
       "payload": "on"
     },
     {
@@ -12,7 +12,14 @@
       "col": 2,
       "type": "button",
       "name": "Test Off",
-      "topic": "test/button",
+      "topic": "test",
       "payload": "off"
+    },
+    {
+      "row": 1,
+      "col": 3,
+      "type": "text",
+      "name": "Test Text",
+      "topic": "test"
     }
 ]
