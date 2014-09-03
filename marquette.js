@@ -172,7 +172,7 @@ app.post('/topics/*', function(req, res) {
 });
 
 
-app.use("/",express.static(__dirname + '/../public'));
+// Serve a static file, if it exists
 app.use(express.static(path.join(__dirname, 'public')));
 
 
