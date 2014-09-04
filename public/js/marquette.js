@@ -2,6 +2,17 @@ var columns = 4;
 var rows = 4;
 var min_margin = 6;
 
+$.postJSON = function(url, data, callback) {
+    return jQuery.ajax({
+        'type': 'POST',
+        'url': url,
+        'contentType': 'application/json',
+        'data': $.toJSON(data),
+        'dataType': 'json',
+        'success': callback
+    });
+};
+
 $(function(){ //DOM Ready
 
     function init_gridster()
@@ -45,12 +56,7 @@ $(function(){ //DOM Ready
             if (tile.type == 'button') {
                 var button = $('<button>'+tile.name+'</button>').attr('type', 'button');
                 button.on("click", function(event) {
-                    $.ajax({
-                        url: '/topics/'+tile.topic,
-                        type: 'post',
-                        dataType: 'json',
-                        data: {payload: tile.payload}
-                    });
+                    $.postJSON('/topics/'+tile.topic, {payload: tile.payload});
                 });
                 button.appendTo(div);
             } else if (tile.type == 'text') {
