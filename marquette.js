@@ -19,6 +19,7 @@ var util = require("util");
 var express = require("express");
 var nopt = require("nopt");
 var path = require("path");
+var fs = require("fs");
 var mqtt = require('mqtt');
 
 // Middleware
@@ -132,6 +133,18 @@ setInterval(function() {
 
 app.get('/tiles', function(req, res) {
   res.send(tiles);
+});
+
+// FIXME: this should be a PUT
+app.post('/tiles', function(req, res) {
+    fs.writeFile('tiles.json', JSON.stringify(req.body, null, 4), function(err) {
+        if(err) {
+          console.log(err);
+          res.status(500).send(err);
+        } else {
+          res.status(204).end();
+        }
+    });
 });
 
 app.get('/update-stream', function(req, res) {

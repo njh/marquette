@@ -15,6 +15,18 @@ $.postJSON = function(url, data, callback) {
 
 $(function(){ //DOM Ready
 
+    function serialise_params(tile, wgd)
+    {
+        var params = { row: wgd.row, col: wgd.col };
+        var blacklist = ['row', 'col', 'coords', 'sizex', 'sizey'];
+        for(var key in tile.data()) {
+            if (blacklist.indexOf(key) < 0) {
+                params[key] = tile.data(key);
+            }
+        }
+        return params;
+    }
+
     function init_gridster()
     {
         var win = $( window );
@@ -36,6 +48,7 @@ $(function(){ //DOM Ready
           widget_selector: ".tile",
           widget_base_dimensions: [tile_size, tile_size],
           widget_margins: [margin_x, margin_y],
+            serialize_params: serialise_params,
           min_cols: columns,
           max_cols: columns
         }).data('gridster');
@@ -72,17 +85,25 @@ $(function(){ //DOM Ready
         });
     });
 
-
-    $("#edit").on("click", function(event) {
-        var target = $( event.target );
-        if (target.html() == 'Edit...') {
-            $( '.tile' ).addClass('editable');
-            gridster.enable();
-            target.html('Save');
-        } else {
+    function save_tiles(button) {
+        var tile_data = gridster.serialize();
+        $.postJSON(
+            'tiles', tile_data
+        ).done(function(data, textStatus) {
             $( '.tile' ).removeClass('editable');
             gridster.disable();
-            target.html('Edit...');
+            button.html('Edit...');
+        });
+    }
+
+    $("#edit").on("click", function(event) {
+        var button = $( event.target );
+        if (button.html() == 'Edit...') {
+            $( '.tile' ).addClass('editable');
+            gridster.enable();
+            button.html('Save');
+        } else {
+            save_tiles(button);
         }
     });
 
