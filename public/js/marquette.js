@@ -45,12 +45,12 @@ $(function(){ //DOM Ready
         var margin_y = Math.floor((height - (tile_size * rows)) / (rows*2));
 
         var gridster = $(".gridster").gridster({
-          widget_selector: ".tile",
-          widget_base_dimensions: [tile_size, tile_size],
-          widget_margins: [margin_x, margin_y],
+            widget_selector: ".tile",
+            widget_base_dimensions: [tile_size, tile_size],
+            widget_margins: [margin_x, margin_y],
             serialize_params: serialise_params,
-          min_cols: columns,
-          max_cols: columns
+            min_cols: columns,
+            max_cols: columns
         }).data('gridster');
 
         // Disable dragging
@@ -122,24 +122,24 @@ $(function(){ //DOM Ready
     console.log("EventSource="+source);
 
     source.onopen = function(e) {
-      console.log("EventSource connection open");
+        console.log("EventSource connection open");
     };
 
     source.onerror = function(e) {
-      console.log("Event source error: "+e);
+        console.log("Event source error: "+e);
     };
 
     source.onmessage = function(e) {
-      var obj = JSON.parse(e.data);
-      $('.tile').each(function() {
-          var tile = $(this);
-          if (obj.topic == tile.data('topic')) {
-              var text = tile.find('.text');
-              if (text) {
-                  text.html(obj.payload);
-              }
-          }
-      });
+        var obj = JSON.parse(e.data);
+        $('.tile').each(function() {
+            var tile = $(this);
+            if (obj.topic == tile.data('topic')) {
+                var text = tile.find('.text');
+                if (text) {
+                    text.html(obj.payload);
+                }
+            }
+        });
     };
 
 

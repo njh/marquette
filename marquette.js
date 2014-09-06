@@ -132,7 +132,7 @@ setInterval(function() {
 
 
 app.get('/tiles', function(req, res) {
-  res.send(tiles);
+    res.send(tiles);
 });
 
 // FIXME: this should be a PUT
