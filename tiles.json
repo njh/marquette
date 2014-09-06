@@ -1,25 +1,25 @@
 [
     {
-      "row": 1,
-      "col": 1,
-      "type": "button",
-      "name": "Test On",
-      "topic": "test",
-      "payload": "on"
+        "row": 1,
+        "col": 1,
+        "type": "button",
+        "name": "Test On",
+        "topic": "test",
+        "payload": "on"
     },
     {
-      "row": 1,
-      "col": 2,
-      "type": "button",
-      "name": "Test Off",
-      "topic": "test",
-      "payload": "off"
+        "row": 1,
+        "col": 2,
+        "type": "button",
+        "name": "Test Off",
+        "topic": "test",
+        "payload": "off"
     },
     {
-      "row": 1,
-      "col": 3,
-      "type": "text",
-      "name": "Test Text",
-      "topic": "test"
+        "row": 1,
+        "col": 3,
+        "type": "text",
+        "name": "Test Text",
+        "topic": "test"
     }
 ]
