@@ -4,22 +4,22 @@
         "col": 1,
         "type": "button",
         "name": "Test On",
-        "topic": "test",
-        "payload": "on"
+        "publish_topic": "test",
+        "publish_payload": "on"
     },
     {
         "row": 1,
         "col": 2,
         "type": "button",
         "name": "Test Off",
-        "topic": "test",
-        "payload": "off"
+        "publish_topic": "test",
+        "publish_payload": "off"
     },
     {
         "row": 1,
         "col": 3,
         "type": "text",
         "name": "Test Text",
-        "topic": "test"
+        "subscribe_topic": "test"
     }
 ]

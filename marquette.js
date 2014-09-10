@@ -109,7 +109,11 @@ tiles = require('./tiles.json');
 
 // Connect to the MQTT sever
 client = mqtt.createClient(settings.mqttPort, settings.mqttHost);
-client.subscribe('test');
+tiles.forEach(function(tile) {
+    if (tile.subscribe_topic) {
+        client.subscribe(tile.subscribe_topic);
+    }
+});
 
 // When a message is received from the MQTT server, pass it on to the browsers
 client.on('message', function(topic, payload) {

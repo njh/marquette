@@ -69,7 +69,7 @@ $(function(){ //DOM Ready
             if (tile.type == 'button') {
                 var button = $('<button>'+tile.name+'</button>').attr('type', 'button');
                 button.on("click", function(event) {
-                    $.postJSON('/topics/'+tile.topic, {payload: tile.payload});
+                    $.postJSON('/topics/'+tile.publish_topic, {payload: tile.publish_payload});
                 });
                 button.appendTo(div);
             } else if (tile.type == 'text') {
@@ -133,7 +133,7 @@ $(function(){ //DOM Ready
         var obj = JSON.parse(e.data);
         $('.tile').each(function() {
             var tile = $(this);
-            if (obj.topic == tile.data('topic')) {
+            if (tile.data('subscribe_topic') == obj.topic) {
                 var text = tile.find('.text');
                 if (text) {
                     text.html(obj.payload);
