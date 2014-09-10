@@ -161,6 +161,10 @@ app.get('/update-stream', function(req, res) {
 
     browsers.push(res);
 
+    Object.keys(topics).forEach(function(key) {
+        res.write("data: " + JSON.stringify({topic:key, payload:topics[key]}) + "\n\n");
+    });
+
     req.on("close", function() {
         index = browsers.indexOf(req);
         browsers.splice(index, 1);
