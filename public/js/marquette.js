@@ -67,11 +67,12 @@ $(function(){ //DOM Ready
             $.each(tile, function(k, v) { div.data(k, v) });
 
             if (tile.type == 'button') {
-                var button = $('<button>'+tile.name+'</button>').attr('type', 'button');
+                var button = $('<button></button>').attr('type', 'button');
                 button.on("click", function(event) {
                     $.postJSON('/topics/'+tile.publish_topic, {payload: tile.publish_payload});
                 });
                 button.appendTo(div);
+                div.append("<label>"+tile.name+"</label>");
             } else if (tile.type == 'text') {
                 div.html(
                   '<label>'+tile.name+'</label>'+

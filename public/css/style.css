@@ -32,11 +32,29 @@ body
   cursor: move;
 }
 
-.tile>button {
-  margin: 10%;
-  width: 80%;
-  height: 80%;
+.tile>button
+{
+  display: block;
+  margin: 11% 11% 1% 11%;
   cursor: pointer;
+  width: 78%;
+  height: 78%;
+}
+
+
+.tile>label
+{
+  display: block;
+  width: 100%;
+  height: 10%;
+  bottom: 0px;
+  text-align: center;
+}
+
+label
+{
+  font-family: "Geneva", Helvetica, Arial, sans-serif;
+  font-size: 8pt;
 }
 
 #footer {
