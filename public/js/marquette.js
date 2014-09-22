@@ -1,6 +1,11 @@
 var columns = 4;
 var rows = 4;
 var min_margin = 6;
+var textfill_config = {
+    innerTag: 'span',
+    minFontPixels: 4,
+    maxFontPixels: 0
+};
 
 $.postJSON = function(url, data, callback) {
     return jQuery.ajax({
@@ -74,17 +79,15 @@ $(function(){ //DOM Ready
                 button.appendTo(div);
                 div.append("<label>"+tile.name+"</label>");
             } else if (tile.type == 'text') {
-                div.html(
-                  '<label>'+tile.name+'</label>'+
-                  '<div class="text"></div>'
-                );
+                div.append('<div class="text"><span></span></div>');
+                div.append('<label>'+tile.name+'</label>');
             } else {
                 div.html("Unknown tile type: "+tile.type);
             }
 
             gridster.add_widget(div, size_x=1, size_y=1, tile.col, tile.row);
         });
-    });
+   });
 
     function save_tiles(button) {
         var tile_data = gridster.serialize();
@@ -107,7 +110,7 @@ $(function(){ //DOM Ready
             save_tiles(button);
         }
     });
-
+    
 
     $( window ).resize(function() {
         var gridster = $('.gridster').data('gridster');
@@ -115,6 +118,7 @@ $(function(){ //DOM Ready
             gridster.destroy();
         }
         init_gridster();
+        $('.text').textfill(textfill_config);
     });
 
     FastClick.attach(document.body);
@@ -137,7 +141,8 @@ $(function(){ //DOM Ready
             if (tile.data('subscribe_topic') == obj.topic) {
                 var text = tile.find('.text');
                 if (text) {
-                    text.html(obj.payload);
+                    text.html('<span>'+obj.payload+'</span>');
+                    text.textfill(textfill_config);
                 }
             }
         });

@@ -41,6 +41,16 @@ body
   height: 78%;
 }
 
+.tile>.text
+{
+  width: 78%;
+  height: 78%;
+  display: block;
+  margin: 11% 11% 1% 11%;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 12pt;
+}
 
 .tile>label
 {
