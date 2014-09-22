@@ -172,7 +172,7 @@ app.get('/update-stream', function(req, res) {
 });
 
 app.get('/topics', function(req, res) {
-  res.send(topics);
+    res.send(topics);
 });
 
 app.get('/topics/*', function(req, res) {
