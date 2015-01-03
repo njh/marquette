@@ -5,31 +5,49 @@ html,body {
 body
 {
   margin: 0px;
-  background: #EEEEEE;
   padding: 0px;
   border: none;
+  background: #DDD;
   font-family: "Gill Sans", "Lucida Grande", Helvetica, Arial, sans-serif;
-  overflow: hidden;
-
-  -webkit-user-select: none; /* disable selection/Copy on IOS */
-  -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
 }
 
-.gridster {
+#tiles {
   padding: 0px;
   margin: 0px;
   border: none;
+  -webkit-touch-callout: none; /* disable the IOS popup when long-press on a link */
+  -webkit-user-select: none; /* disable selection/Copy on IOS */
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  overflow: hidden;
 }
 
-.gridster .tile {
-  border: 2px transparent dashed;
-  background-color: #E6E6E6;
+.tile {
+  list-style: none;
+  float: left;
+  margin: 8px;
+  padding: 5px;
+  width: 150px;
+  height: 150px;
+
+  border: 1px solid #CCC;
+  background: #E6E6E6;
+  color: #1C94C4;
+
   cursor: default;
 }
 
-.gridster .tile.editable {
+.tile.editable {
   border: 2px black dashed;
+  padding: 4px;
   cursor: move;
+}
+
+.tile.ghost {
+  border: 1px dashed #CCC;
+  opacity: 0.4;
 }
 
 .tile>button
@@ -49,6 +67,7 @@ body
   margin: 11% 11% 1% 11%;
   text-align: center;
   vertical-align: middle;
+  text-overflow: clip;
   font-size: 12pt;
 }
 
