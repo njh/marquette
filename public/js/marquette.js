@@ -22,6 +22,7 @@ $(function(){ //DOM Ready
         $.each(tiles, function(i, tile) {
             var item = $("<li></li>").attr('id', "tile"+i).addClass('tile');
             $.each(tile, function(k, v) { item.data(k, v) });
+            $("<h4/>").append(tile.title).appendTo(item);
 
             if (tile.type == 'button') {
                 var button = $('<button></button>').attr('type', 'button');
@@ -29,10 +30,8 @@ $(function(){ //DOM Ready
                     $.postJSON('/topics/'+tile.publish_topic, {payload: tile.publish_payload});
                 });
                 button.appendTo(item);
-                item.append("<label>"+tile.name+"</label>");
             } else if (tile.type == 'text') {
                 item.append('<div class="text"><span></span></div>');
-                item.append('<label>'+tile.name+'</label>');
             } else {
                 item.html("Unknown tile type: "+tile.type);
             }

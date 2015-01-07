@@ -1,19 +1,19 @@
 [
     {
         "type": "button",
-        "name": "Test On",
+        "title": "Test On",
         "publish_topic": "test",
         "publish_payload": "on"
     },
     {
         "type": "button",
-        "name": "Test Off",
+        "title": "Test Off",
         "publish_topic": "test",
         "publish_payload": "off"
     },
     {
         "type": "text",
-        "name": "Test Text",
+        "title": "Test Text",
         "subscribe_topic": "test"
     }
 ]

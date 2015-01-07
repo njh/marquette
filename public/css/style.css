@@ -71,19 +71,18 @@ body
   font-size: 12pt;
 }
 
-.tile>label
+.tile h4
 {
-  display: block;
   width: 100%;
   height: 10%;
-  bottom: 0px;
-  text-align: center;
-}
+  padding: 0;
+  margin: 5% auto 5% auto;
 
-label
-{
-  font-family: "Geneva", Helvetica, Arial, sans-serif;
-  font-size: 8pt;
+  text-transform: uppercase;
+  color: #BBB;
+  text-align: center;
+  font-size: 9pt;
+  font-weight: 100;
 }
 
 #footer {
