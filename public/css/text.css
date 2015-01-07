@@ -1,0 +1,11 @@
+.tile .text
+{
+  width: 100%;
+  height: 60%;
+  display: block;
+  margin: 15% auto auto auto;
+  text-align: center;
+  vertical-align: middle;
+  text-overflow: clip;
+  font-size: 12pt;
+}

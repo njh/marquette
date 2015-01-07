@@ -25,7 +25,7 @@ $(function(){ //DOM Ready
             $("<h4/>").append(tile.title).appendTo(item);
 
             if (tile.type == 'button') {
-                var button = $('<button></button>').attr('type', 'button');
+                var button = $('<button/>').attr('type', 'button').append('Press');
                 button.on("click", function(event) {
                     $.postJSON('/topics/'+tile.publish_topic, {payload: tile.publish_payload});
                 });

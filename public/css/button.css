@@ -1,0 +1,25 @@
+.tile button
+{
+  display: block;
+  cursor: pointer;
+  width: 80%;
+  height: 40%;
+  border: 0;
+  margin: 20% auto auto auto;
+  padding: 0;
+  background: #0BC7F6;
+  color: white;
+  border-radius: 25px;
+
+  text-transform: uppercase;
+  font-size: 11pt;
+}
+
+.tile button:focus {
+  outline: none;
+}
+
+.tile button:active {
+  background-color: #2EEBF3;
+  outline: none;
+}
