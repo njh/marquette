@@ -134,19 +134,26 @@ setInterval(function() {
     });
 }, 20000);
 
-
 app.get('/tiles', function(req, res) {
-    res.send(tiles);
+    // FIXME: need to also subscribe/unsubscribe to topics when tiles.json changes
+    fs.readFile('tiles.json', function (err, data) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.type('json');
+            res.send(data);
+        }
+    });
 });
 
 // FIXME: this should be a PUT
 app.post('/tiles', function(req, res) {
     fs.writeFile('tiles.json', JSON.stringify(req.body, null, 4), function(err) {
-        if(err) {
-          console.log(err);
-          res.status(500).send(err);
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
         } else {
-          res.status(204).end();
+            res.status(204).end();
         }
     });
 });
