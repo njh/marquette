@@ -48,6 +48,7 @@ $(function(){ //DOM Ready
         });
 
         $('.tile').addClass('editable');
+        $('#discard').show();
         button.html('Save');
     }
 
@@ -69,6 +70,7 @@ $(function(){ //DOM Ready
             'tiles', tile_data
         ).done(function(data, textStatus) {
             $('.tile').removeClass('editable');
+            $('#discard').hide();
             container.sortable('destroy');
             button.html('Edit...');
         });
@@ -81,6 +83,11 @@ $(function(){ //DOM Ready
         } else {
             saveTiles(button);
         }
+    });
+    
+    $("#discard").on("click", function(event) {
+        // FIXME: better way to do this?
+        window.location = window.location;
     });
     
     FastClick.attach(document.body);
