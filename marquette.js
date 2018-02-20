@@ -108,7 +108,7 @@ tiles = require('./tiles.json');
 
 
 // Connect to the MQTT sever
-client = mqtt.createClient(settings.mqttPort, settings.mqttHost);
+client = mqtt.connect({host: settings.mqttHost, port: settings.mqttPort});
 tiles.forEach(function(tile) {
     if (tile.subscribe_topic) {
         client.subscribe(tile.subscribe_topic);

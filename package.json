@@ -11,9 +11,9 @@
     "dependencies": {
         "express": "~4.5.0",
         "nopt": "~2.2.0",
-        "mqtt": "~0.3.0",
         "body-parser": "~1.4.0",
         "errorhandler": "~1.1.0",
+        "mqtt": "~2.15.3",
         "morgan": "~1.9.0"
     },
     "engines": {
