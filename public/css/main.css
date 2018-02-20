@@ -37,6 +37,8 @@ body
 
   font-family: "Avenir", "Lucida Grande", Helvetica, Arial, sans-serif;
   cursor: default;
+
+  position: relative;
 }
 
 .tile.editable {
@@ -63,6 +65,35 @@ body
   font-size: 9pt;
   font-weight: 100;
 }
+
+.tile button.edit
+{
+  display: none;
+  width: 50px;
+  height: 25px;
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  z-index: 10;
+
+  border: 0;
+  border-radius: 5px;
+  margin: 5px;
+  padding: 0;
+
+  background: #F00;
+  font-size: 9pt;
+}
+
+.tile button.edit:active {
+  background-color: #FC5F66;
+}
+
+.tile.editable button.edit
+{
+  display: block;
+}
+
 
 #footer {
    position:fixed;

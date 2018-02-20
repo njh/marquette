@@ -35,6 +35,9 @@ $(function(){ //DOM Ready
             } else {
                 item.html("Unknown tile type: "+tile.type);
             }
+            
+            $("<button />").addClass('edit').append('Edit').appendTo(item);
+            
             item.appendTo(container);
         });
     });
@@ -84,7 +87,7 @@ $(function(){ //DOM Ready
             saveTiles(button);
         }
     });
-    
+
     $("#discard").on("click", function(event) {
         // FIXME: better way to do this?
         window.location = window.location;
