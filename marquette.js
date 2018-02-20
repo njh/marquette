@@ -117,12 +117,13 @@ tiles.forEach(function(tile) {
 
 // When a message is received from the MQTT server, pass it on to the browsers
 client.on('message', function(topic, payload) {
-    console.log("Received MQTT: "+payload);
-    topics[topic] = payload;
+    strPayload = payload.toString('utf8')
+    console.log("Received MQTT "+topic+" : "+strPayload);
+    topics[topic] = strPayload;
 
     browsers.forEach(function(res) {
         console.log("  informing browser: "+res);
-        res.write("data: " + JSON.stringify({topic:topic, payload:payload}) + "\n\n");
+        res.write("data: " + JSON.stringify({topic:topic, payload:strPayload}) + "\n\n");
     });
 });
 
