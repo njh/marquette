@@ -14,7 +14,7 @@
         "mqtt": "~0.3.0",
         "body-parser": "~1.4.0",
         "errorhandler": "~1.1.0",
-        "morgan": "~1.1.0"
+        "morgan": "~1.9.0"
     },
     "engines": {
         "node": ">=0.8"

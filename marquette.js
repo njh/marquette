@@ -30,7 +30,7 @@ var morgan  = require('morgan');
 var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(morgan());
+app.use(morgan('dev'));
 
 // development only
 if (process.env.NODE_ENV === 'development') {
