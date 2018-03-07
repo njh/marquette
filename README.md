@@ -32,6 +32,13 @@ npm install
 ![Browser Screenshot](docs/screenshot.png)
 
 
+## Limitations
+
+* Only 'Push Button' and 'Text' tiles currently supported
+* In-browser configuration not implemented
+* Styling improvements needed
+
+
 ## Author
 
 Nicholas Humfrey ([@njh](https://twitter.com/njh))
