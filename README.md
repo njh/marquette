@@ -39,6 +39,13 @@ npm install
 * Styling improvements needed
 
 
+## Related Projects
+
+* [mqtt-smarthome](https://github.com/mqtt-smarthome/mqtt-smarthome)
+* [homekit2mqtt](https://github.com/hobbyquaker/homekit2mqtt)
+* [Node-RED Dashboard](https://github.com/node-red/node-red-dashboard)
+
+
 ## Author
 
 Nicholas Humfrey ([@njh](https://twitter.com/njh))
